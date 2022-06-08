@@ -1,8 +1,11 @@
 Mkdisk $size=>8 $path=>"/home/jorge/Escritorio/Disco/" $name=>Disco1.dsk
-rmdisk $path=>"/home/jorge/Escritorio/Disco1.dsk"
+rmdisk $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk"
 fdisk $sizE=>8 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion1
 fdisk $sizE=>12 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion2 @type=e @unit=k
-fdisk $sizE=>4 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion3 @type=l @unit=b
+fdisk $sizE=>1 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion3 @type=l @unit=k
+fdisk $sizE=>1 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion4 @type=l @unit=k
+fdisk $sizE=>8 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion5 @type=l @unit=k
+fdisk $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion4 @delete=>fast
 
 
 

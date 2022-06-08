@@ -221,7 +221,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                     ebr.part_next = -1;
                                     ebr.part_size = 0;
                                     ebr.part_start = 0;
-                                    strcpy(ebr.part_name, "nn");
+                                    strcpy(ebr.part_name, "n");
 
                                     disco = fopen(path.c_str(), "rb+");
                                     fseek(disco, particiones[j].part_start, SEEK_SET);
@@ -248,7 +248,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                     ebr.part_next = -1;
                                     ebr.part_size = 0;
                                     ebr.part_start = 0;
-                                    strcpy(ebr.part_name, "nn");
+                                    strcpy(ebr.part_name, "n");
 
                                     disco = fopen(path.c_str(), "rb+");
                                     fseek(disco, particiones[j].part_start, SEEK_SET);
@@ -275,7 +275,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                     ebr.part_next = -1;
                                     ebr.part_size = 0;
                                     ebr.part_start = 0;
-                                    strcpy(ebr.part_name, "nn");
+                                    strcpy(ebr.part_name, "n");
 
                                     disco = fopen(path.c_str(), "rb+");
                                     fseek(disco, particiones[j].part_start, SEEK_SET);
@@ -302,7 +302,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                     ebr.part_next = -1;
                                     ebr.part_size = 0;
                                     ebr.part_start = 0;
-                                    strcpy(ebr.part_name, "nn");
+                                    strcpy(ebr.part_name, "n");
 
                                     disco = fopen(path.c_str(), "rb+");
                                     fseek(disco, particiones[j].part_start, SEEK_SET);
@@ -354,6 +354,8 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                         strcpy(ebr.part_name, name.c_str());
 
                         fseek(disco, -sizeof(EBR), SEEK_CUR);
+                        cout << ftell(disco) << endl;
+                        getchar();
                         fwrite(&ebr, sizeof(EBR), 1, disco);
                         fclose(disco);
                         return;
@@ -391,13 +393,20 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                         aux = end - aux;
                         if(size < aux)
                         {
+                            ebr.part_next = ftell(disco);
+                            fseek(disco, ebr.part_start, SEEK_SET);
+                            fseek(disco, -sizeof(EBR), SEEK_CUR);
+                            fwrite(&ebr, sizeof(EBR), 1, disco);
+
+                            fseek(disco, ebr.part_size, SEEK_CUR);
+
                             ebr.part_fit = fit;
+                            ebr.part_start = ftell(disco) + sizeof(EBR);
                             ebr.part_next = -1;
                             ebr.part_size = size;
-                            aux = sizeof(EBR);
-                            aux += ftell(disco);
-                            ebr.part_start = aux;
                             strcpy(ebr.part_name, name.c_str());
+                            cout << ftell(disco) << endl;
+                            getchar();
                             fwrite(&ebr, sizeof(EBR), 1, disco);
                             fclose(disco);
                             return;
@@ -417,7 +426,122 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
 
 void fdiskDelete(string path, string name, string borrar)
 {
-    /* code */
+    MBR mbr;
+    FILE *disco = NULL;
+    disco = fopen(path.c_str(), "rb+");
+    if(disco != NULL)
+    {
+        rewind(disco);
+        fread(&mbr, sizeof(MBR), 1, disco);
+    }
+    else
+    {
+        cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+        getchar();
+        return;
+    }
+
+    vector<Particion> particiones;
+    particiones.push_back(mbr.mbr_partition_1);
+    particiones.push_back(mbr.mbr_partition_2);
+    particiones.push_back(mbr.mbr_partition_3);
+    particiones.push_back(mbr.mbr_partition_4);
+
+    // Buscar por nombres
+    for(int i = 0; i < particiones.size(); i++)
+    {
+        if(!strcmp(particiones[i].part_name, name.c_str()))
+        {
+
+            // BORRADO PARTICION DEL DISCO
+            if(!strcmp(borrar.c_str(), "full"))
+            {
+                char relleno = '\0';
+                fseek(disco, particiones[i].part_start, SEEK_SET);
+                fwrite(&relleno, sizeof(relleno), particiones[i].part_size, disco);
+            }
+
+            // BORRADO PARTICION DEL MBR
+            particiones[i].part_fit = 'n';
+            particiones[i].part_size = 0;
+            particiones[i].part_start = 0;
+            particiones[i].part_status = 'n';
+            particiones[i].part_type = 'n';
+            strcpy(particiones[i].part_name, "n");
+
+            switch (i)
+            {
+                case 0:
+                    mbr.mbr_partition_1 = particiones[i];
+                    break;
+
+                case 1:
+                    mbr.mbr_partition_2 = particiones[i];
+                    break;
+                    
+                case 2:
+                    mbr.mbr_partition_3 = particiones[i];
+                    break;
+
+                case 3:
+                    mbr.mbr_partition_4 = particiones[i];
+                    break;
+            }
+
+            rewind(disco);
+            fwrite(&mbr, sizeof(MBR), 1, disco);
+            fclose(disco);
+            return;
+        }
+    }
+
+    for(int i = 0; i < particiones.size(); i++)
+    {
+        if(particiones[i].part_type == 'e')
+        {
+            EBR ebr;
+            fseek(disco, particiones[i].part_start, SEEK_SET);
+
+            while(true)
+            {
+                fread(&ebr, sizeof(EBR), 1, disco);
+
+                if(!strcmp(ebr.part_name, name.c_str()))
+                {
+                    if(!strcmp(borrar.c_str(), "full"))
+                    {
+                        char relleno = '\0';
+                        fwrite(&relleno, sizeof(relleno), ebr.part_size, disco);
+                    }
+
+                    fseek(disco, ebr.part_start, SEEK_SET);
+                    fseek(disco, -sizeof(EBR), SEEK_CUR);
+                    cout << ftell(disco) << endl;
+                    getchar();
+
+                    ebr.part_fit = 'n';
+                    ebr.part_size = 0;
+                    ebr.part_start = 0;
+                    strcpy(ebr.part_name, "n");
+
+                    fwrite(&ebr, sizeof(EBR), 1, disco);
+                    fclose(disco);
+                    return;
+                }
+                else if(ebr.part_next != -1)
+                {
+                    fseek(disco, ebr.part_next, SEEK_SET);
+                }
+                else
+                {
+                    fclose(disco);
+                    cout << "\tERROR NO SE HA ENCONTRADO LA PARTICION INDICADA..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+        }
+    }
 }
 
 void fdiskAdd(string path, string name, int add, char unit)
@@ -439,6 +563,3 @@ void unmount(string id)
 {
     /* code */
 }
-
-
-// strtok y strcasecmp

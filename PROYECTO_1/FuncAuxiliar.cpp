@@ -74,7 +74,7 @@ vector<BusyBlock> getBusyBlocks(vector<Particion> part)
 
     for (int i = 0; i < part.size(); i++)
     {
-        if (strcmp(part[i].part_name, "nn") != 0)
+        if (part[i].part_name[0] != 'n')
         {
             BusyBlock bb;
             bb.start = part[i].part_start;

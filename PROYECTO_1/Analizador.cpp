@@ -34,7 +34,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);     // nueva llamada a strtok para obtener valor con del --> "=>"
                 if(partComand != NULL)              // pregunta si no es nulo
                 {
-                    cout << partComand << endl;     // partComand es el valor del parametro analizado
                     size = atoi(partComand);
                 }
             }
@@ -43,7 +42,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     path = partComand;
                     path.erase(find(path.begin(), path.end(), '\"'));
                     path.erase(find(path.begin(), path.end(), '\"'));
@@ -54,7 +52,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     name = partComand;
                 }
             }
@@ -129,7 +126,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     path = partComand;
                     path.erase(find(path.begin(), path.end(), '\"'));
                     path.erase(find(path.begin(), path.end(), '\"'));
@@ -178,7 +174,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     size = atoi(partComand);
                 }
             }
@@ -187,7 +182,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     unit = partComand[0];
                 }
             }
@@ -196,7 +190,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     path = partComand;
                     path.erase(find(path.begin(), path.end(), '\"'));
                     path.erase(find(path.begin(), path.end(), '\"'));
@@ -207,7 +200,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     type = partComand[0];
                 }
             }
@@ -216,7 +208,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     fit = partComand[0];
                 }
             }
@@ -225,7 +216,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     borrar = partComand;
                 }                
             }
@@ -234,7 +224,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     name = partComand;
                 }                
             }
@@ -243,7 +232,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     add = atoi(partComand);
                 }
             }
@@ -372,8 +360,9 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     path = partComand;
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                    path.erase(find(path.begin(), path.end(), '\"'));
                 }
             }
             else if(!strcasecmp(partComand, "$name"))
@@ -381,7 +370,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     name = partComand;
                 }
             }
@@ -428,7 +416,6 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    cout << partComand << endl;
                     id = partComand;
                 }                
             }
