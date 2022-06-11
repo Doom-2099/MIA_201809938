@@ -182,7 +182,7 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    unit = partComand[0];
+                    unit = tolower(partComand[0]);
                 }
             }
             else if(!strcasecmp(partComand, "$path"))
@@ -200,7 +200,7 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    type = partComand[0];
+                    type = tolower(partComand[0]);
                 }
             }
             else if(!strcasecmp(partComand, "@fit"))
@@ -208,7 +208,7 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    fit = partComand[0];
+                    fit = tolower(partComand[0]);
                 }
             }
             else if(!strcasecmp(partComand, "@delete"))
@@ -216,7 +216,7 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    borrar = partComand;
+                    borrar = toLowerCase(partComand);
                 }                
             }
             else if(!strcasecmp(partComand, "$name"))
@@ -237,7 +237,6 @@ void analizarComando(string comando)
             }
             else if(!strcasecmp(partComand, "@mov"))
             {
-                cout << "MOV" << endl;
                 mov = true;
             }
             else
@@ -293,12 +292,12 @@ void analizarComando(string comando)
                                 }
                                 else
                                 {
-                                    cout << "\tERROR EL PARAMETRO ADD NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
+                                    cout << "\tERROR LA COMBINACION DE PARAMETROS INGRESADOS ES INCORRECTA..." << endl;
                                     getchar();
                                     return;
                                 }
                             }
-                            else if(mov)
+                            else if(mov && borrar == "" && size == 0 &&add == 0)
                             {
                                 fdiskMov(path, name);
                             }
@@ -395,6 +394,10 @@ void analizarComando(string comando)
                 return;
             }
         }
+        else if(path == "" && name == "")
+        {
+            printMount();
+        }
         else
         {
             cout << "\tERROR EL PARAMETRO PATH NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
@@ -416,7 +419,7 @@ void analizarComando(string comando)
                 partComand = strtok(NULL, del);
                 if(partComand != NULL)
                 {
-                    id = partComand;
+                    id = toLowerCase(partComand);
                 }                
             }
             else
@@ -435,6 +438,149 @@ void analizarComando(string comando)
         else
         {
             cout << "\tERROR EL PARAMETRO ID NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
+            getchar();
+            return;
+        }
+    }
+    else if(!strcasecmp(parametros[0].c_str(), "rep"))
+    {
+        string rep = "";
+        string path = "";
+        string id = "";
+
+        for(int i = 1; i < parametros.size(); i++)
+        {
+            char aux[50];
+            strcpy(aux, parametros[i].c_str());
+            partComand = strtok(aux, del);
+
+            if(!strcasecmp(partComand, "$name"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    rep = toLowerCase(partComand);
+                }
+            }
+            else if(!strcasecmp(partComand, "$path"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    path = partComand;
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                }
+            }
+            else if(!strcasecmp(partComand, "$id"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    id = toLowerCase(partComand);
+                }
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO " << partComand << " ES INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
+        }
+
+        // Validaciones
+        if(path != "")
+        {
+            if(id != "")
+            {
+                if(rep != "")
+                {
+                    if(!strcmp(rep.c_str(), "mbr"))
+                    {
+                        mbrRep(path);
+                    }
+                    else if(!strcmp(rep.c_str(), "disk"))
+                    {
+                        dskRep(path);
+                    }
+                    else
+                    {
+                        cout << "\tERROR EL PARAMETRO NAME TIENE UN VALOR INCORRECTO..." << endl;
+                        getchar();
+                        return;
+                    }
+                }
+                else
+                {
+                    cout << "\tERROR EL PARAMETRO NAME NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO ID NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
+        }
+        else
+        {
+            cout << "\tERROR EL PARAMETRO PATH NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
+            getchar();
+            return;
+        }
+
+    }
+    else if(!strcasecmp(parametros[0].c_str(), "exec"))
+    {
+        string path = "";
+
+        for(int i = 1; i < parametros.size(); i++)
+        {
+            char aux[50];
+            strcpy(aux, parametros[i].c_str());
+            partComand = strtok(aux, del);
+
+            if(!strcasecmp(partComand, "$path"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    path = partComand;
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                }
+                else
+                {
+                    cout << "\tERROR EL PARAMETRO " << partComand << " ES INCORRECTO..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+        }
+
+        // Validaciones
+        if(path != "")
+        {
+            ifstream archivo(path.c_str());
+            string linea;
+
+            while (getline(archivo, linea))
+            {
+                if(strstr(linea.c_str(), "/*") != NULL)
+                {
+                    continue; 
+                }
+
+                analizarComando(linea);
+            }
+
+            archivo.close();
+        }
+        else
+        {
+            cout << "\tERROR EL PARAMETRO PATH NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
             getchar();
             return;
         }

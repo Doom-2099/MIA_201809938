@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <cstring>
 #include <sys/stat.h>
+#include "MountList.h"
 #include "FuncAuxiliar.h"
 
 using namespace std;
@@ -15,4 +16,5 @@ void fdiskDelete(string path, string name, string borrar);
 void fdiskAdd(string path, string name, int add, char unit);
 void fdiskMov(string path, string name);
 void mount(string path, string name);
+void printMount();
 void unmount(string id);

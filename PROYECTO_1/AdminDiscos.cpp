@@ -1,5 +1,8 @@
 #include "AdminDiscos.h"
 
+static Lista<PrtMount> *mountList = new Lista<PrtMount>();
+static vector<string> paths;
+
 void mkdisk(int size, string path, string name, char unit)
 {
     char relleno[1024];
@@ -11,7 +14,13 @@ void mkdisk(int size, string path, string name, char unit)
     {
         relleno[i] = '\0';
     }
-    
+
+    cmd = "cp -a ";
+    cmd.append(path);
+    cmd.append(name);
+    cmd.append(" ");
+    cmd.append(getPath(path, name));
+
     path.append(name);
 
     FILE * disco;
@@ -68,6 +77,7 @@ void mkdisk(int size, string path, string name, char unit)
         }
 
         fclose(disco);
+        system(cmd.c_str());
     }
     else
     {
@@ -112,20 +122,25 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
     MBR mbr;
     int aux;
     FILE *disco = NULL;
-    disco = fopen(path.c_str(), "rb+");
-    if(disco != NULL)
+    disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
+
+    if(disco == NULL)
     {
-        rewind(disco);
-        fread(&mbr, sizeof(MBR), 1, disco);
-        aux = ftell(disco);
-        fclose(disco);
+        path = getPathWithName(path);
+        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
+
+        if(disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
     }
-    else
-    {
-        cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
-        getchar();
-        return;
-    }
+
+    rewind(disco);
+    fread(&mbr, sizeof(MBR), 1, disco);
+    aux = ftell(disco);
+    fclose(disco);
 
     vector<Particion> particiones;
     particiones.push_back(mbr.mbr_partition_1);
@@ -354,8 +369,6 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                         strcpy(ebr.part_name, name.c_str());
 
                         fseek(disco, -sizeof(EBR), SEEK_CUR);
-                        cout << ftell(disco) << endl;
-                        getchar();
                         fwrite(&ebr, sizeof(EBR), 1, disco);
                         fclose(disco);
                         return;
@@ -405,8 +418,6 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                             ebr.part_next = -1;
                             ebr.part_size = size;
                             strcpy(ebr.part_name, name.c_str());
-                            cout << ftell(disco) << endl;
-                            getchar();
                             fwrite(&ebr, sizeof(EBR), 1, disco);
                             fclose(disco);
                             return;
@@ -428,18 +439,23 @@ void fdiskDelete(string path, string name, string borrar)
 {
     MBR mbr;
     FILE *disco = NULL;
-    disco = fopen(path.c_str(), "rb+");
-    if(disco != NULL)
+    disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
+
+    if(disco == NULL)
     {
-        rewind(disco);
-        fread(&mbr, sizeof(MBR), 1, disco);
+        path = getPathWithName(path);
+        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
+
+        if(disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
     }
-    else
-    {
-        cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
-        getchar();
-        return;
-    }
+
+    rewind(disco);
+    fread(&mbr, sizeof(MBR), 1, disco);
 
     vector<Particion> particiones;
     particiones.push_back(mbr.mbr_partition_1);
@@ -516,8 +532,6 @@ void fdiskDelete(string path, string name, string borrar)
 
                     fseek(disco, ebr.part_start, SEEK_SET);
                     fseek(disco, -sizeof(EBR), SEEK_CUR);
-                    cout << ftell(disco) << endl;
-                    getchar();
 
                     ebr.part_fit = 'n';
                     ebr.part_size = 0;
@@ -546,20 +560,332 @@ void fdiskDelete(string path, string name, string borrar)
 
 void fdiskAdd(string path, string name, int add, char unit)
 {
-    /* code */
+    MBR mbr;
+    add = calculate_size(add, unit);
+    FILE *disco = NULL;
+    disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
+
+    if(disco == NULL)
+    {
+        path = getPathWithName(path);
+        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
+
+        if(disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
+    }
+
+    rewind(disco);
+    fread(&mbr, sizeof(MBR), 1, disco);
+    fclose(disco);
+
+    vector<Particion> particiones;
+    particiones.push_back(mbr.mbr_partition_1);
+    particiones.push_back(mbr.mbr_partition_2);
+    particiones.push_back(mbr.mbr_partition_3);
+    particiones.push_back(mbr.mbr_partition_4);
+
+    for(int i = 0; i < particiones.size(); i++)
+    {
+        if(!strcmp(particiones[i].part_name, name.c_str()))
+        {
+            vector<BusyBlock> bblocks = getBusyBlocks(particiones);
+
+            for(int j = 0; j < bblocks.size(); j++)
+            {
+                if(bblocks[j].start == particiones[i].part_start)
+                {
+                    if((add + bblocks[j].end) > 0)
+                    {
+                        if((add + bblocks[j].end) < bblocks[j + 1].start)
+                        {
+                            particiones[i].part_size += add;
+                            disco = fopen(path.c_str(), "rb+");
+                            rewind(disco);
+
+                            switch (i)
+                            {
+                                case 0:
+                                    mbr.mbr_partition_1 = particiones[i];
+                                    break;
+                                case 1:
+                                    mbr.mbr_partition_2 = particiones[i];
+                                    break;
+                                
+                                case 2:
+                                    mbr.mbr_partition_3 = particiones[i];
+
+                                case 3:
+                                    mbr.mbr_partition_4 = particiones[i];
+                            }
+
+                            fwrite(&mbr, sizeof(MBR), 1, disco);
+                            fclose(disco);
+                            return;
+                        }
+                        else
+                        {
+                            cout << "\tERROR NO HAY ESPACIO DISPONIBLE PARA MODIFICAR EL TAMAÑO..." << endl;
+                            getchar();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        cout << "\tERROR EL TAMAÑO RESULTANTE ES NEGATIVO, ES UN VALOR INCORRECTO..." << endl;
+                        getchar();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    for(int i = 0; i < particiones.size(); i++)
+    {
+        if(particiones[i].part_type = 'e')
+        {
+            EBR ebr;
+            disco = fopen(path.c_str(), "rb+");
+            fseek(disco, particiones[i].part_start, SEEK_SET);
+
+            while (true)
+            {
+                fread(&ebr, sizeof(EBR), 1, disco);
+
+                if(!strcmp(ebr.part_name, name.c_str()))
+                {
+                    if((add + ebr.part_size) > 0)
+                    {
+                        if((add + ebr.part_size) < ebr.part_next)
+                        {
+                            ebr.part_size += add;
+                            fseek(disco, -sizeof(EBR), SEEK_CUR);
+                            fwrite(&ebr, sizeof(EBR), 1, disco);
+                            fclose(disco);
+                            return;
+                        }
+                        else
+                        {
+                            cout << "\tERROR NO HAY ESPACIO DISPONIBLE PARA MODIFICAR EL TAMAÑO..." << endl;
+                            getchar();
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        cout << "\tERROR EL TAMAÑO RESULTANTE ES NEGATIVO, ES UN VALOR INCORRECTO..." << endl;
+                        getchar();
+                        return;
+                    }
+                }
+                else if(ebr.part_next != 1)
+                {
+                    fseek(disco, ebr.part_next, SEEK_SET);
+                }
+                else
+                {
+                    fclose(disco);
+                    cout << "\tERROR NO SE HA ENCONTRADO LA PARTICION INDICADA..." << endl;
+                    getchar();
+                    break;
+                }
+            }
+        }
+    }
+
+
 }
 
 void fdiskMov(string path, string name)
 {
-    /* code */
+    cout << "\tCOMANDO MOV..." << endl;
 }
 
 void mount(string path, string name)
 {
-    /* code */
+    MBR mbr;
+    FILE *disco = NULL;
+    disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
+
+    if(disco == NULL)
+    {
+        path = getPathWithName(path);
+        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
+
+        if(disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
+    }
+
+    rewind(disco);
+    fread(&mbr, sizeof(MBR), 1, disco);
+    fclose(disco);
+
+    vector<Particion> particiones;
+    particiones.push_back(mbr.mbr_partition_1);
+    particiones.push_back(mbr.mbr_partition_2);
+    particiones.push_back(mbr.mbr_partition_3);
+    particiones.push_back(mbr.mbr_partition_4);
+
+    for(int i = 0; i < particiones.size(); i++)
+    {
+        if(!strcmp(particiones[i].part_name, name.c_str()))
+        {
+            if(mountList->isEmpty())
+            {
+                PrtMount prt;
+                prt.id = "vda1";
+                prt.name = name;
+                prt.path = path;
+                prt.part_start = particiones[i].part_start;
+                prt.part_size = particiones[i].part_size;
+                prt.part_fit = particiones[i].part_fit;
+                mountList->insert(prt);
+                paths.push_back(path);
+                return;
+            }
+            else
+            {
+                PrtMount prt;
+                char aux = 'a';
+                string id = "vd";
+                int cont = 0;
+                
+                while(cont < paths.size())
+                {
+                    if(!strcmp(path.c_str(), paths[i].c_str()))
+                    {
+                        aux += cont;
+                        break;
+                    }
+
+                    cont++;
+                }
+
+                if(cont == paths.size())
+                {
+                    paths.push_back(path);
+                }
+
+                id.push_back(aux);
+                id.push_back(mountList->getNum(path));
+
+                cout << "\tID PARTICION: " << id.c_str() << endl;
+
+                prt.id = id;
+                prt.name = name;
+                prt.path = path;
+                prt.part_start = particiones[i].part_start;
+                prt.part_size = particiones[i].part_size;
+                prt.part_fit = particiones[i].part_fit;
+                mountList->insert(prt);
+                return;
+            }
+        }
+    }
+
+    for(int i = 0; i < particiones.size(); i++)
+    {
+        if(particiones[i].part_type == 'e')
+        {
+            EBR ebr;
+            disco = fopen(path.c_str(), "rb+");
+            fseek(disco, particiones[i].part_start, SEEK_SET);
+
+            while(true)
+            {
+                fread(&ebr, sizeof(EBR), 1, disco);
+                if(!strcmp(ebr.part_name, name.c_str()))
+                {
+                    if(mountList->isEmpty())
+                    {
+                        PrtMount prt;
+                        prt.id = "vda1";
+                        prt.name = name;
+                        prt.path = path;
+                        prt.part_start = ebr.part_start;
+                        prt.part_size = ebr.part_size;
+                        prt.part_fit = ebr.part_fit;
+                        mountList->insert(prt);
+                        paths.push_back(path);
+                        return;
+                    }
+                    else
+                    {
+                        PrtMount prt;
+                        char aux = 'a';
+                        string id = "vd";
+                        int cont = 0;
+                        
+                        while(cont < paths.size())
+                        {
+                            if(!strcmp(path.c_str(), paths[i].c_str()))
+                            {
+                                aux += cont;
+                                break;
+                            }
+
+                            cont++;
+                        }
+
+                        if(cont == paths.size())
+                        {
+                            paths.push_back(path);
+                        }
+
+                        id.push_back(aux);
+                        id.push_back(mountList->getNum(path));
+
+                        cout << "\tID PARTICION: " << id.c_str() << endl;
+                        
+                        prt.id = id;
+                        prt.name = name;
+                        prt.path = path;
+                        prt.part_start = particiones[i].part_start;
+                        prt.part_size = particiones[i].part_size;
+                        prt.part_fit = particiones[i].part_fit;
+                        mountList->insert(prt);
+                        return;
+                    }
+                }
+                else if(ebr.part_next != -1)
+                {
+                    fseek(disco, ebr.part_next, SEEK_SET);
+                }
+                else
+                {
+                    fclose(disco);
+                    cout << "ERROR NO EXISTE LA PARTICION INDICADA EN EL DISCO..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+        }
+    }
+}
+
+void printMount()
+{
+    mountList->print();
 }
 
 void unmount(string id)
 {
-    /* code */
+    if(mountList->remove(id) == 1)
+    {
+        cout << "\tLA PARTICION " << id << " SE HA DESMONTADO" << endl;
+        getchar();
+    }
+    else
+    {
+        cout << "\tLA PARTICION " << id << " NO SE HA MONTADO..." << endl;
+        getchar();
+    }
 }

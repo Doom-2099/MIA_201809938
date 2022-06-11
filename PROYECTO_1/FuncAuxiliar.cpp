@@ -1,23 +1,5 @@
 #include "FuncAuxiliar.h"
 
-vector<string> split(string str, char pattern)
-{
-    int init = 0;
-    int found = 0;
-    string splitted;
-    vector<string> results;
-
-    while (found >= 0)
-    {
-        found = str.find(pattern, init);
-        splitted = str.substr(init, found - init);
-        init = found + 1;
-        results.push_back(splitted);
-    }
-
-    return results;
-}
-
 string toLowerCase(string str)
 {
     for_each(str.begin(), str.end(), [](char &c)
@@ -147,4 +129,27 @@ vector<FreeBlock> getFreeBlocks(vector<BusyBlock> blocks, int sizeDsk, int start
     }
 
     return freeBlocks;
+}
+
+string getPath(string path, string name)
+{
+    string ruta = "";
+    char aux[50];
+    strcpy(aux, name.c_str());
+    char *partName = strtok(aux, ".");
+    ruta = path;
+    ruta.append(partName);
+    ruta.append("-1.dsk");
+    return ruta;
+}
+
+string getPathWithName(string path)
+{
+    string ruta = "";
+    char aux[100];
+    strcpy(aux, path.c_str());
+    char *partName = strtok(aux, ".");
+    ruta = partName;
+    ruta.append("-1.dsk");
+    return ruta;
 }

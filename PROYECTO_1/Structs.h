@@ -1,3 +1,4 @@
+#pragma once
 
 using namespace std;
 
@@ -15,7 +16,7 @@ struct MBR
 {
     int mbr_size;
     int mbr_disk_signature;
-    char mbr_fecha_creacion[16];
+    char mbr_fecha_creacion[19];
     Particion mbr_partition_1;
     Particion mbr_partition_2;
     Particion mbr_partition_3;
@@ -42,4 +43,20 @@ struct FreeBlock
     int start;
     int end;
     int size;
+};
+
+struct PrtMount 
+{
+    string id;
+    string path;
+    string name;
+    char part_fit;
+    int part_start;
+    int part_size;
+};
+
+struct TypeBlock
+{
+    int start;
+    char type;
 };

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include "AdminDiscos.h"
+#include "AdminRep.h"
 
 using namespace std;
 

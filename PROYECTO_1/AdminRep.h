@@ -4,5 +4,5 @@
 using namespace std;
 
 void dskRep(string path);
-void mbrRep();
+void mbrRep(string path);
 
