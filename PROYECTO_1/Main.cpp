@@ -10,7 +10,12 @@ int main() {
          << endl
          << "\t";
 
-    string comando = "";
-    getline(cin, comando); 
-    analizarComando(comando);
+    while(true)
+    {
+        string comando = "";
+        getline(cin, comando); 
+        if(strstr(comando.c_str(), "exit") != NULL) { break; }
+        analizarComando(comando);
+        cout << "\t";
+    }
 }

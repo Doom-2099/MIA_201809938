@@ -68,13 +68,6 @@ vector<BusyBlock> getBusyBlocks(vector<Particion> part)
     sort(busyblocks.begin(), busyblocks.end(), [](BusyBlock &b1, BusyBlock &b2)
          { return b1.start < b2.start; });
 
-    cout << "\t--------------- BUSY BLOCKS --------------------" << endl;
-
-    for(int i = 0; i < busyblocks.size(); i++)
-    {
-        cout << "\t" << busyblocks[i].start << "\t" << (busyblocks[i].end - busyblocks[i].start) << endl;
-    }
-
     return busyblocks;
 }
 
@@ -121,13 +114,6 @@ vector<FreeBlock> getFreeBlocks(vector<BusyBlock> blocks, int sizeDsk, int start
         }
     }
 
-    cout << "\t--------------- FREE BLOCKS --------------------" << endl;
-
-    for(int i = 0; i < freeBlocks.size(); i++)
-    {
-        cout << "\t" << freeBlocks[i].start << "\t" <<freeBlocks[i].size <<endl;
-    }
-
     return freeBlocks;
 }
 
@@ -152,4 +138,19 @@ string getPathWithName(string path)
     ruta = partName;
     ruta.append("-1.dsk");
     return ruta;
+}
+
+int getNum(vector<PrtMount> list, string path)
+{
+    int cont = 1;
+
+    for(int i = 0; i < list.size(); i++)
+    {
+        if(!strcmp(list[i].path.c_str(), path.c_str()))
+        {
+            cont++;
+        }
+    }
+
+    return cont;
 }

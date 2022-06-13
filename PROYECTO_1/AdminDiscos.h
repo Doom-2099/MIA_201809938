@@ -1,10 +1,12 @@
+#pragma once
+
 #include <iostream>
 #include <iomanip>
 #include <ctime>
 #include <stdio.h>
 #include <cstring>
 #include <sys/stat.h>
-#include "MountList.h"
+#include <math.h>
 #include "FuncAuxiliar.h"
 
 using namespace std;
@@ -17,4 +19,6 @@ void fdiskAdd(string path, string name, int add, char unit);
 void fdiskMov(string path, string name);
 void mount(string path, string name);
 void printMount();
-void unmount(string id);
+void unmount(vector<string> ids);
+void mkfs(string id, string type);
+vector<PrtMount> getList();

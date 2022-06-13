@@ -19,3 +19,4 @@ vector<BusyBlock> getBusyBlocks(vector<Particion> part);
 vector<FreeBlock> getFreeBlocks(vector<BusyBlock> blocks, int sizeDsk, int startDsk);
 string getPath(string path, string name);
 string getPathWithName(string path);
+int getNum(vector<PrtMount> list, string path);

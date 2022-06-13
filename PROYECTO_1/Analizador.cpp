@@ -152,7 +152,7 @@ void analizarComando(string comando)
         }
     }
     else if(!strcasecmp(parametros[0].c_str(), "fdisk"))
-    {
+    { 
         int size = 0;
         char unit = 'k';
         string path = "";
@@ -407,7 +407,48 @@ void analizarComando(string comando)
     }
     else if(!strcasecmp(parametros[0].c_str(), "unmount"))
     {
+        vector<string> ids;
+        for(int i = 1; i < parametros.size(); i++)
+        {
+            char aux[50];
+            strcpy(aux, parametros[i].c_str());
+            partComand = strtok(aux, del);
+
+            if(strstr(partComand, "$id") != NULL)
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    ids.push_back(toLowerCase(partComand));
+                }                
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO " << partComand << " ES INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
+        }
+
+        // Validaciones
+        if(ids.size() > 0)
+        {
+            unmount(ids);
+        }
+        else
+        {
+            cout << "\tERROR NO SE HA ESPECIFICADO NINGUN ID..." << endl;
+            getchar();
+            return;
+        }
+    }
+    else if(!strcasecmp(parametros[0].c_str(), "mkfs"))
+    {
         string id = "";
+        string type = "full";
+        int add = 0;
+        char unit = 'k';
+
         for(int i = 1; i < parametros.size(); i++)
         {
             char aux[50];
@@ -420,7 +461,31 @@ void analizarComando(string comando)
                 if(partComand != NULL)
                 {
                     id = toLowerCase(partComand);
-                }                
+                }
+            }
+            else if(!strcasecmp(partComand, "@type"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    type = tolower(partComand[0]);
+                }
+            }
+            else if(!strcasecmp(partComand, "@add"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    add = atoi(partComand);
+                }
+            }
+            else if(!strcasecmp(partComand, "@unit"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    unit = tolower(partComand[0]);
+                }
             }
             else
             {
@@ -433,11 +498,23 @@ void analizarComando(string comando)
         // Validaciones
         if(id != "")
         {
-            unmount(id);
+            if(!strcmp(type.c_str(), "fast") || !strcmp(type.c_str(), "full"))
+            {
+                if(add == 0)
+                {
+                    mkfs(id, type);
+                }
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO TYPE TIENE UN VALOR INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
         }
         else
         {
-            cout << "\tERROR EL PARAMETRO ID NO SE HA ESPECIFICADO O TIENE UN VALOR INCORRECTO..." << endl;
+            cout << "\tERROR EL PARAMETRO ID NO SE HA ESPECIFICADO..." << endl;
             getchar();
             return;
         }
@@ -502,6 +579,10 @@ void analizarComando(string comando)
                     else if(!strcmp(rep.c_str(), "disk"))
                     {
                         dskRep(path);
+                    }
+                    else if(!strcmp(rep.c_str(), "sb"))
+                    {
+                        sbRep(path, id);
                     }
                     else
                     {
