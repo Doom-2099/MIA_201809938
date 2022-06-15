@@ -7,6 +7,7 @@
 #include <vector>
 #include "AdminDiscos.h"
 #include "AdminRep.h"
+#include "AdminArchivos.h"
 
 using namespace std;
 

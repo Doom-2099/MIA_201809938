@@ -121,20 +121,22 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
     size = calculate_size(size, unit);
     MBR mbr;
     int aux;
+    bool raid = false;
     FILE *disco = NULL;
     disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
-
     if (disco == NULL)
     {
-        path = getPathWithName(path);
-        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
-
+        disco = fopen(getPathWithName(path).c_str(), "rb+"); // Abrir Disco Copia
         if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
             return;
         }
+    }
+    else
+    {
+        raid = true;
     }
 
     rewind(disco);
@@ -165,7 +167,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
         if (particiones[i].part_type == 'e')
         {
             EBR ebr;
-            disco = fopen(path.c_str(), "rb+");
+            disco = obtenerFile(path, raid);
             fseek(disco, particiones[i].part_start, SEEK_SET);
 
             while (true)
@@ -198,7 +200,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
         // Validacion Particiones Extendidas
         for (int i = 0; i < particiones.size(); i++)
         {
-            if (particiones[i].part_type == type)
+            if ((particiones[i].part_type == 'e') && (type == 'e'))
             {
                 cout << "\tERROR YA EXISTE UNA PARTICION EXTENDIDA..." << endl;
                 getchar();
@@ -238,7 +240,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                 ebr.part_start = 0;
                                 strcpy(ebr.part_name, "n");
 
-                                disco = fopen(path.c_str(), "rb+");
+                                disco = obtenerFile(path, raid);
                                 fseek(disco, particiones[j].part_start, SEEK_SET);
                                 fwrite(&ebr, sizeof(EBR), 1, disco);
                                 fclose(disco);
@@ -265,7 +267,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                 ebr.part_start = 0;
                                 strcpy(ebr.part_name, "n");
 
-                                disco = fopen(path.c_str(), "rb+");
+                                disco = obtenerFile(path, raid);
                                 fseek(disco, particiones[j].part_start, SEEK_SET);
                                 fwrite(&ebr, sizeof(EBR), 1, disco);
                                 fclose(disco);
@@ -292,7 +294,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                 ebr.part_start = 0;
                                 strcpy(ebr.part_name, "n");
 
-                                disco = fopen(path.c_str(), "rb+");
+                                disco = obtenerFile(path, raid);
                                 fseek(disco, particiones[j].part_start, SEEK_SET);
                                 fwrite(&ebr, sizeof(EBR), 1, disco);
                                 fclose(disco);
@@ -319,7 +321,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                                 ebr.part_start = 0;
                                 strcpy(ebr.part_name, "n");
 
-                                disco = fopen(path.c_str(), "rb+");
+                                disco = obtenerFile(path, raid);
                                 fseek(disco, particiones[j].part_start, SEEK_SET);
                                 fwrite(&ebr, sizeof(EBR), 1, disco);
                                 fclose(disco);
@@ -328,10 +330,20 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                             break;
                         }
 
-                        disco = fopen(path.c_str(), "rb+");
+                        disco = obtenerFile(path, raid);
                         rewind(disco);
                         fwrite(&mbr, sizeof(MBR), 1, disco);
                         fclose(disco);
+
+                        if(raid)
+                        {
+                            string cmd = "cp -a ";
+                            cmd.append(path);
+                            cmd.append(" ");
+                            cmd.append(getPathWithName(path));
+                            system(cmd.c_str());
+                        }
+
                         return;
                     }
                 }
@@ -354,7 +366,7 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
             {
                 EBR ebr;
                 int end = particiones[i].part_start + particiones[i].part_size;
-                disco = fopen(path.c_str(), "rb+");
+                disco = obtenerFile(path, raid);
                 fseek(disco, particiones[i].part_start, SEEK_SET);
                 fread(&ebr, sizeof(EBR), 1, disco);
 
@@ -371,6 +383,16 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                         fseek(disco, -sizeof(EBR), SEEK_CUR);
                         fwrite(&ebr, sizeof(EBR), 1, disco);
                         fclose(disco);
+
+                        if(raid)
+                        {
+                            string cmd = "cp -a ";
+                            cmd.append(path);
+                            cmd.append(" ");
+                            cmd.append(getPathWithName(path));
+                            system(cmd.c_str());
+                        }
+
                         return;
                     }
                     else if (ebr.part_size == 0 && ebr.part_next != -1)
@@ -385,6 +407,16 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                             fseek(disco, -sizeof(EBR), SEEK_CUR);
                             fwrite(&ebr, sizeof(EBR), 1, disco);
                             fclose(disco);
+
+                            if(raid)
+                            {
+                                string cmd = "cp -a ";
+                                cmd.append(path);
+                                cmd.append(" ");
+                                cmd.append(getPathWithName(path));
+                                system(cmd.c_str());
+                            }
+
                             return;
                         }
                         else
@@ -420,6 +452,16 @@ void fdisk(int size, string path, string name, char unit, char type, char fit)
                             strcpy(ebr.part_name, name.c_str());
                             fwrite(&ebr, sizeof(EBR), 1, disco);
                             fclose(disco);
+
+                            if(raid)
+                            {
+                                string cmd = "cp -a ";
+                                cmd.append(path);
+                                cmd.append(" ");
+                                cmd.append(getPathWithName(path));
+                                system(cmd.c_str());
+                            }
+
                             return;
                         }
                         else
@@ -439,12 +481,12 @@ void fdiskDelete(string path, string name, string borrar)
 {
     MBR mbr;
     FILE *disco = NULL;
+    bool raid = false;
     disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
 
     if (disco == NULL)
     {
-        path = getPathWithName(path);
-        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
+        disco = fopen(getPathWithName(path).c_str(), "rb+"); // Abrir Disco Copia
 
         if (disco == NULL)
         {
@@ -452,6 +494,10 @@ void fdiskDelete(string path, string name, string borrar)
             getchar();
             return;
         }
+    }
+    else
+    {
+        raid = true;
     }
 
     rewind(disco);
@@ -510,6 +556,16 @@ void fdiskDelete(string path, string name, string borrar)
             rewind(disco);
             fwrite(&mbr, sizeof(MBR), 1, disco);
             fclose(disco);
+
+            if(raid)
+            {
+                string cmd = "cp -a ";
+                cmd.append(path);
+                cmd.append(" ");
+                cmd.append(getPathWithName(path));
+                system(cmd.c_str());
+            }
+
             return;
         }
     }
@@ -546,6 +602,16 @@ void fdiskDelete(string path, string name, string borrar)
 
                     fwrite(&ebr, sizeof(EBR), 1, disco);
                     fclose(disco);
+
+                    if(raid)
+                    {
+                        string cmd = "cp -a ";
+                        cmd.append(path);
+                        cmd.append(" ");
+                        cmd.append(getPathWithName(path));
+                        system(cmd.c_str());
+                    }
+
                     return;
                 }
                 else if (ebr.part_next != -1)
@@ -569,12 +635,12 @@ void fdiskAdd(string path, string name, int add, char unit)
     MBR mbr;
     add = calculate_size(add, unit);
     FILE *disco = NULL;
+    bool raid = false;
     disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
 
     if (disco == NULL)
     {
-        path = getPathWithName(path);
-        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
+        disco = fopen(getPathWithName(path).c_str(), "rb+"); // Abrir Disco Copia
 
         if (disco == NULL)
         {
@@ -582,6 +648,10 @@ void fdiskAdd(string path, string name, int add, char unit)
             getchar();
             return;
         }
+    }
+    else
+    {
+        raid = true;
     }
 
     rewind(disco);
@@ -609,7 +679,7 @@ void fdiskAdd(string path, string name, int add, char unit)
                         if ((add + bblocks[j].end) < bblocks[j + 1].start)
                         {
                             particiones[i].part_size += add;
-                            disco = fopen(path.c_str(), "rb+");
+                            disco = obtenerFile(path, raid);
                             rewind(disco);
 
                             switch (i)
@@ -630,6 +700,16 @@ void fdiskAdd(string path, string name, int add, char unit)
 
                             fwrite(&mbr, sizeof(MBR), 1, disco);
                             fclose(disco);
+
+                            if(raid)
+                            {
+                                string cmd = "cp -a ";
+                                cmd.append(path);
+                                cmd.append(" ");
+                                cmd.append(getPathWithName(path));
+                                system(cmd.c_str());
+                            }
+
                             return;
                         }
                         else
@@ -655,7 +735,7 @@ void fdiskAdd(string path, string name, int add, char unit)
         if (particiones[i].part_type = 'e')
         {
             EBR ebr;
-            disco = fopen(path.c_str(), "rb+");
+            disco = obtenerFile(path, raid);
             fseek(disco, particiones[i].part_start, SEEK_SET);
 
             while (true)
@@ -672,6 +752,15 @@ void fdiskAdd(string path, string name, int add, char unit)
                             fseek(disco, -sizeof(EBR), SEEK_CUR);
                             fwrite(&ebr, sizeof(EBR), 1, disco);
                             fclose(disco);
+
+                            if(raid)
+                            {
+                                string cmd = "cp -a ";
+                                cmd.append(path);
+                                cmd.append(" ");
+                                cmd.append(getPathWithName(path));
+                                system(cmd.c_str());
+                            }
                             return;
                         }
                         else
@@ -712,14 +801,13 @@ void fdiskMov(string path, string name)
 void mount(string path, string name)
 {
     MBR mbr;
+    bool raid = false;
     FILE *disco = NULL;
     disco = fopen(path.c_str(), "rb+"); // Abrir Disco Orginal
 
     if (disco == NULL)
     {
-        path = getPathWithName(path);
-        disco = fopen(path.c_str(), "rb+"); // Abrir Disco Copia
-
+        disco = fopen(getPathWithName(path).c_str(), "rb+"); // Abrir Disco Copia
         if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
@@ -727,10 +815,13 @@ void mount(string path, string name)
             return;
         }
     }
+    else
+    {
+        raid = true;
+    }
 
     rewind(disco);
     fread(&mbr, sizeof(MBR), 1, disco);
-    fclose(disco);
 
     vector<Particion> particiones;
     particiones.push_back(mbr.mbr_partition_1);
@@ -751,6 +842,39 @@ void mount(string path, string name)
                 prt.part_start = particiones[i].part_start;
                 prt.part_size = particiones[i].part_size;
                 prt.part_fit = particiones[i].part_fit;
+                particiones[i].part_status = '1';
+
+                switch (i)
+                {
+                    case 0:
+                        mbr.mbr_partition_1 = particiones[i];
+                        break;
+
+                    case 1:
+                        mbr.mbr_partition_2 = particiones[i];
+                        break;
+
+                    case 2:
+                        mbr.mbr_partition_3 = particiones[i];
+                        break;
+
+                    case 3:
+                        mbr.mbr_partition_4 = particiones[i];
+                        break;
+                }
+
+                rewind(disco);
+                fwrite(&mbr, sizeof(MBR), 1, disco);
+                fclose(disco);
+
+                if(raid)
+                {
+                    string cmd = "cp -a ";
+                    cmd.append(path);
+                    cmd.append(" ");
+                    cmd.append(getPathWithName(path));
+                    system(cmd.c_str());
+                }
 
                 auto t = time(nullptr);
                 auto tm = *localtime(&t);
@@ -782,6 +906,7 @@ void mount(string path, string name)
 
                 if (cont == paths.size())
                 {
+                    aux += cont;
                     paths.push_back(path);
                 }
 
@@ -794,6 +919,39 @@ void mount(string path, string name)
                 prt.part_start = particiones[i].part_start;
                 prt.part_size = particiones[i].part_size;
                 prt.part_fit = particiones[i].part_fit;
+                particiones[i].part_status = '1';
+
+                switch (i)
+                {
+                    case 0:
+                        mbr.mbr_partition_1 = particiones[i];
+                        break;
+
+                    case 1:
+                        mbr.mbr_partition_2 = particiones[i];
+                        break;
+
+                    case 2:
+                        mbr.mbr_partition_3 = particiones[i];
+                        break;
+
+                    case 3:
+                        mbr.mbr_partition_4 = particiones[i];
+                        break;
+                }
+
+                rewind(disco);
+                fwrite(&mbr, sizeof(MBR), 1, disco);
+                fclose(disco);
+
+                if(raid)
+                {
+                    string cmd = "cp -a ";
+                    cmd.append(path);
+                    cmd.append(" ");
+                    cmd.append(getPathWithName(path));
+                    system(cmd.c_str());
+                }
 
                 auto t = time(nullptr);
                 auto tm = *localtime(&t);
@@ -813,7 +971,7 @@ void mount(string path, string name)
         if (particiones[i].part_type == 'e')
         {
             EBR ebr;
-            disco = fopen(path.c_str(), "rb+");
+            disco = obtenerFile(path, raid);
             fseek(disco, particiones[i].part_start, SEEK_SET);
 
             while (true)
@@ -868,14 +1026,12 @@ void mount(string path, string name)
                         id += aux;
                         id.append(to_string(getNum(mountList, path)));
 
-                        cout << "\tID PARTICION: " << id.c_str() << endl;
-
                         prt.id = id;
                         prt.name = name;
                         prt.path = path;
-                        prt.part_start = particiones[i].part_start;
-                        prt.part_size = particiones[i].part_size;
-                        prt.part_fit = particiones[i].part_fit;
+                        prt.part_start = ebr.part_start;
+                        prt.part_size = ebr.part_size;
+                        prt.part_fit = ebr.part_fit;
 
                         auto t = time(nullptr);
                         auto tm = *localtime(&t);
@@ -916,17 +1072,90 @@ void printMount()
         cout << "\tFECHA: " << mountList[i].mountDate << endl
              << endl;
     }
+
+    getchar();
 }
 
 void unmount(vector<string> ids)
 {
     for_each(ids.begin(), ids.end(), [](string &id)
     {
+        MBR mbr;
         int i = 0;
         while (i < mountList.size())
         {
             if(!strcmp(id.c_str(), mountList[i].id.c_str()))
             {
+                FILE *disco = NULL;
+                bool raid = false;
+                disco = fopen(mountList[i].path.c_str(), "rb+"); // Abrir Disco Orginal
+
+                if (disco == NULL)
+                {
+                    disco = fopen(getPathWithName(mountList[i].path).c_str(), "rb+"); // Abrir Disco Copia
+
+                    if (disco == NULL)
+                    {
+                        cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+                        getchar();
+                        return;
+                    }
+                }
+                else
+                {
+                    raid = true;
+                }
+
+                rewind(disco);
+                fread(&mbr, sizeof(MBR), 1, disco);
+
+                vector<Particion> particiones;
+                particiones.push_back(mbr.mbr_partition_1);
+                particiones.push_back(mbr.mbr_partition_2);
+                particiones.push_back(mbr.mbr_partition_3);
+                particiones.push_back(mbr.mbr_partition_4);
+
+                for(int x = 0; x < particiones.size(); x++)
+                {
+                    if(!strcmp(particiones[x].part_name, mountList[i].name.c_str()))
+                    {
+                        particiones[x].part_status = '0';
+
+                        switch (x)
+                        {
+                            case 0:
+                                mbr.mbr_partition_1 = particiones[x];
+                                break;
+
+                            case 1:
+                                mbr.mbr_partition_2 = particiones[x];
+                                break;
+
+                            case 2:
+                                mbr.mbr_partition_3 = particiones[x];
+                                break;
+
+                            case 3:
+                                mbr.mbr_partition_4 = particiones[x];
+                                break;
+                        }
+
+                        rewind(disco);
+                        fwrite(&mbr, sizeof(MBR), 1, disco);
+                        fclose(disco);
+                        break;
+                    }
+                }
+
+                if(raid)
+                {
+                    string cmd = "cp -a ";
+                    cmd.append(mountList[i].path);
+                    cmd.append(" ");
+                    cmd.append(getPathWithName(mountList[i].path));
+                    system(cmd.c_str());
+                }
+                
                 mountList.erase(mountList.begin() + i);
                 cout << "\tLA PARTICION " << id << " SE HA DESMONTADO" << endl;
                 break;
@@ -948,6 +1177,7 @@ void mkfs(string id, string type)
 {
     int i = 0;
     PrtMount prt;
+    bool raid = false;
     while (i < mountList.size())
     {
         if(!strcmp(id.c_str(), mountList[i].id.c_str()))
@@ -967,16 +1197,13 @@ void mkfs(string id, string type)
 
     int n = 0;
     n = floor((prt.part_size - sizeof(SuperBloque))/(4+sizeof(Journal) + sizeof(TablaInodos)+(3*sizeof(BloqueArchivo))));
-    cout << "\tVALOR N: " << n << endl;
-    getchar();
 
     FILE * disco;
     disco = fopen(prt.path.c_str(), "rb+");
 
     if (disco == NULL)
     {
-        prt.path = getPathWithName(prt.path);
-        disco = fopen(prt.path.c_str(), "rb+"); // Abrir Disco Copia
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
 
         if (disco == NULL)
         {
@@ -984,6 +1211,10 @@ void mkfs(string id, string type)
             getchar();
             return;
         }
+    }
+    else
+    {
+        raid = true;
     }
 
     fseek(disco, prt.part_start, SEEK_SET);
@@ -1039,9 +1270,9 @@ void mkfs(string id, string type)
     strcpy(j.journal_fecha, str.c_str());
     j.next = -1;
 
-    fwrite(&j, sizeof(Journal), 1, disco);          // Escribir el Journal
-    fseek(disco, (n-1)*sizeof(Journal), SEEK_CUR);  // Salto Hacia El BitMap De Bloques
-
+    fwrite(&j, sizeof(Journal), 1, disco);            // Escribir el Journal
+    fseek(disco, ((n-1)*sizeof(Journal)), SEEK_CUR);  // Salto Hacia El BitMap De Bloques
+    
     char bit = '1';                                  // Bit para los bitmap
     fwrite(&bit, sizeof(bit), 1, disco);             // Bit Inodo Carpeta /
     bit = '0';                                       // Cambio De Valor
@@ -1092,6 +1323,15 @@ void mkfs(string id, string type)
 
     fwrite(&bc, sizeof(BloqueCarpeta), 1, disco);
     fclose(disco);
+
+    if(raid)
+    {
+        string cmd = "cp -a ";
+        cmd.append(prt.path.c_str());
+        cmd.append(" ");
+        cmd.append(getPathWithName(prt.path.c_str()));
+        system(cmd.c_str());
+    }
 
 }
 

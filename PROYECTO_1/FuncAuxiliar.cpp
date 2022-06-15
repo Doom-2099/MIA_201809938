@@ -154,3 +154,15 @@ int getNum(vector<PrtMount> list, string path)
 
     return cont;
 }
+
+FILE* obtenerFile(string path, bool raid)
+{
+    if(raid)
+    {
+        return fopen(path.c_str(), "rb+");
+    }
+    else
+    {
+        return fopen(getPathWithName(path).c_str(), "rb+");
+    }
+}

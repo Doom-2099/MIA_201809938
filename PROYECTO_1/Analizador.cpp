@@ -237,7 +237,18 @@ void analizarComando(string comando)
             }
             else if(!strcasecmp(partComand, "@mov"))
             {
-                mov = true;
+                partComand = strtok(NULL, del);
+
+                if(partComand == NULL)
+                {
+                    mov = true;
+                }
+                else
+                {
+                    cout << "\tERROR, ESTE PARAMETRO NO LLEVA NINGUN VALOR..." << endl;
+                    getchar();
+                    return; 
+                }
             }
             else
             {
@@ -519,6 +530,182 @@ void analizarComando(string comando)
             return;
         }
     }
+    else if(!strcasecmp(parametros[0].c_str(), "mkfile"))
+    {
+        string id = "";
+        string path = "";
+        bool p = false;
+        int size = 0;
+        string cont = "";
+
+        for(int i = 1; i < parametros.size(); i++)
+        {
+            char aux[50];
+            strcpy(aux, parametros[i].c_str());
+            partComand = strtok(aux, del);
+
+            if(!strcasecmp(partComand, "$id"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    id = toLowerCase(partComand);
+                }
+            }
+            else if(!strcasecmp(partComand, "$path"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    path = partComand;
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                }
+            }
+            else if(!strcasecmp(partComand, "@p"))
+            {
+                partComand = strtok(NULL, del);
+                
+                if(partComand == NULL)
+                {
+                    p = true;
+                }
+                else
+                {
+                    cout << "\tERROR, ESTE PARAMETRO NO LLEVA NINGUN VALOR..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+            else if(!strcasecmp(partComand, "@size"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    size = atoi(partComand);
+                }
+            }
+            else if(!strcasecmp(partComand, "@cont"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    cont = partComand;
+                    cont.erase(find(cont.begin(), cont.end(), '\"'));
+                    cont.erase(find(cont.begin(), cont.end(), '\"'));
+                }
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO " << partComand << " ES INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
+        }
+
+        // Validaciones
+        if(id != "")
+        {
+            if(path != "")
+            {
+                if(size < 0)
+                {
+                    mkfile(id, path, p, size, cont);
+                }
+                else
+                {
+                    cout << "\tERROR EL PARAMETRO SIZE TIENE VALOR NEGATIVO..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO PATH NO SE HA ESPECIFICADO..." << endl;
+                getchar();
+                return;
+            }
+        }
+        else
+        {
+            cout << "\tERROR EL PARAMETRO ID NO SE HA ESPECIFICADO..." << endl;
+            getchar();
+            return;
+        }
+    }
+    else if(!strcasecmp(parametros[0].c_str(), "mkdir"))
+    {
+        string id = "";
+        string path = "";
+        bool p = false;
+
+        for(int i = 1; i < parametros.size(); i++)
+        {
+            char aux[50];
+            strcpy(aux, parametros[i].c_str());
+            partComand = strtok(aux, del);
+
+            if(!strcasecmp(partComand, "$id"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    id = toLowerCase(partComand);
+                }
+            }
+            else if(!strcasecmp(partComand, "$path"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    path = partComand;
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                }
+            }
+            else if(!strcasecmp(partComand, "@p"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand == NULL)
+                {
+                    p = true;
+                }
+                else
+                {
+                    cout << "\tERROR, ESTE PARAMETRO NO LLEVA NINGUN VALOR..." << endl;
+                    getchar();
+                    return;
+                }
+            }
+            else
+            {
+                cout << "\tERROR EL PARAMETRO " << partComand << " ES INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
+        }
+
+        //Validaciones
+        if(id != "")
+        {
+            if(path != "")
+            {
+                mkdir(id, path, p);
+            }
+            else
+            {
+                cout << "\tERROR EL PATH NO SE HA ESPECIFICADO..." << endl;
+                getchar();
+                return;
+            }
+        }
+        else
+        {
+            cout << "\tERROR EL ID NO SE HA ESPECIFICADO..." << endl;
+            getchar();
+            return;
+        }
+    }
     else if(!strcasecmp(parametros[0].c_str(), "rep"))
     {
         string rep = "";
@@ -574,15 +761,27 @@ void analizarComando(string comando)
                 {
                     if(!strcmp(rep.c_str(), "mbr"))
                     {
-                        mbrRep(path);
+                        mbrRep(path, id);
                     }
                     else if(!strcmp(rep.c_str(), "disk"))
                     {
-                        dskRep(path);
+                        dskRep(path, id);
                     }
                     else if(!strcmp(rep.c_str(), "sb"))
                     {
                         sbRep(path, id);
+                    }
+                    else if(!strcmp(rep.c_str(), "bm_block"))
+                    {
+                        bm_blockRep(path, id);
+                    }
+                    else if(!strcmp(rep.c_str(), "bm_inode"))
+                    {
+                        bm_inodeRep(path, id);
+                    }
+                    else if(!strcmp(rep.c_str(), "journaling"))
+                    {
+                        journalingRep(path, id);
                     }
                     else
                     {
@@ -654,6 +853,7 @@ void analizarComando(string comando)
                     continue; 
                 }
 
+                cout << "\t" << linea << endl;
                 analizarComando(linea);
             }
 

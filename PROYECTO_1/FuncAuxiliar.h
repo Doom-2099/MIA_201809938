@@ -20,3 +20,4 @@ vector<FreeBlock> getFreeBlocks(vector<BusyBlock> blocks, int sizeDsk, int start
 string getPath(string path, string name);
 string getPathWithName(string path);
 int getNum(vector<PrtMount> list, string path);
+FILE* obtenerFile(string path, bool raid);

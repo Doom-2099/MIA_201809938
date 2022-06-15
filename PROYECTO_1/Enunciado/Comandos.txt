@@ -1,18 +1,45 @@
-Mkdisk $size=>8 $path=>"/home/jorge/Escritorio/Disco/" $name=>Disco1.dsk
-/* rmdisk $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" */
-fdisk $sizE=>20 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion1
-fdisk $sizE=>20 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion2 @type=e @unit=k
-fdisk $sizE=>1 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion3 @type=l @unit=k
-fdisk $sizE=>1 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion4 @type=l @unit=k
-fdisk $sizE=>8 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion5 @type=l @unit=k
-fdisk $sizE=>50 $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion6
-fdisk $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion4 @delete=>fast
-mount $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion1
-mount $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion5
-mount $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion2
-mount $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>Particion6
+Mkdisk $size=>8 $path=>"/home/jorge/Escritorio/Disco1/" $name=>Disco1.dsk
+Mkdisk $size=>20 $path=>"/home/jorge/Escritorio/Disco2/" $name=>Disco2.dsk
+Mkdisk $size=>16 $path=>"/home/jorge/Escritorio/Disco2/" $name=>Disco2.dsk
+rmdisk $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk"
+/* -------------------
+fdisk $sizE=>20 $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion1
+fdisk $sizE=>20 $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion2 @type=e @unit=k
+fdisk $sizE=>1 $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion3 @type=l @unit=k
+fdisk $sizE=>1 $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion4 @type=l @unit=k
+fdisk $sizE=>8 $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion5 @type=l @unit=k
+fdisk $sizE=>50 $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion6
+fdisk $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion4 @delete=>fast
+/* -------------------
+fdisk $sizE=>30 $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion1
+fdisk $sizE=>40 $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion2
+fdisk $sizE=>10 $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion3
+fdisk $sizE=>50 $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion4 
+fdisk $sizE=>8 $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion5 
+fdisk $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion2 @delete=>fast
+fdisk $sizE=>8 $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion5
+/* -------------------
+mount $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion1
+mount $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion5
+mount $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion2
+mount $path=>"/home/jorge/Escritorio/Disco1/Disco1.dsk" $name=>Particion6
+mount $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion4
+mount $path=>"/home/jorge/Escritorio/Disco2/Disco2.dsk" $name=>Particion1
 mount
+/* -------------------
 mkfs $id=>vda1
-rep $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>mbr $id=>vda1
-rep $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>disk $id=>vda1
-rep $path=>"/home/jorge/Escritorio/Disco/Disco1.dsk" $name=>sb $id=>vda1
+mkfs $id=>vdb2
+/* -------------------
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco11.png" $name=>mbr $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco12.png" $name=>disk $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco13.png" $name=>sb $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco14.png" $name=>bm_block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco15.png" $name=>bm_inode $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco16.png" $name=>journaling $id=>vda1
+/* --------------------------------
+rep $path=>"/home/jorge/Escritorio/Disco2/Disco11.png" $name=>mbr $id=>vdb2
+rep $path=>"/home/jorge/Escritorio/Disco2/Disco12.png" $name=>disk $id=>vdb2
+rep $path=>"/home/jorge/Escritorio/Disco2/Disco13.png" $name=>sb $id=>vdb2
+rep $path=>"/home/jorge/Escritorio/Disco2/Disco14.png" $name=>bm_block $id=>vdb2
+rep $path=>"/home/jorge/Escritorio/Disco2/Disco15.png" $name=>bm_inode $id=>vdb2
+rep $path=>"/home/jorge/Escritorio/Disco2/Disco16.png" $name=>journaling $id=>vdb2
