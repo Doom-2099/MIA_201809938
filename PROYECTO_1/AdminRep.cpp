@@ -7,9 +7,9 @@ void dskRep(string path, string id)
     string ruta;
     PrtMount prt;
     int i = 0;
-    while(i < list.size())
+    while (i < list.size())
     {
-        if(!strcmp(id.c_str(), list[i].id.c_str()))
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
         {
             ruta = list[i].path;
             break;
@@ -17,13 +17,13 @@ void dskRep(string path, string id)
         i++;
     }
 
-    if(i == list.size())
+    if (i == list.size())
     {
         cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
         getchar();
         return;
     }
-    
+
     // ------------------------
     // ---- RECUPERAR MBR -----
     // ------------------------
@@ -32,12 +32,12 @@ void dskRep(string path, string id)
     FILE *disco = NULL;
     disco = fopen(ruta.c_str(), "rb+"); // Abrir Disco Orginal
 
-    if(disco == NULL)
+    if (disco == NULL)
     {
         ruta = getPathWithName(ruta);
         disco = fopen(ruta.c_str(), "rb+"); // Abrir Disco Copia
 
-        if(disco == NULL)
+        if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
@@ -79,11 +79,11 @@ void dskRep(string path, string id)
         // ------------------------------------------------
         for (int i = 0; i < particiones.size(); i++)
         {
-            if(particiones[i].part_fit != 'n')
+            if (particiones[i].part_fit != 'n')
             {
-                if(particiones[i].part_type == 'p')
+                if (particiones[i].part_type == 'p')
                 {
-                    if(aux < particiones[i].part_start)
+                    if (aux < particiones[i].part_start)
                     {
                         header.append("<td height=\'75\' width=\'100\'> Libre </td>\n");
                         header.append("<td height=\'75\' width=\'100\'>");
@@ -97,7 +97,7 @@ void dskRep(string path, string id)
                         header.append(particiones[i].part_name);
                         header.append("</td>\n");
                         aux = particiones[i].part_start + particiones[i].part_size;
-                    }   
+                    }
                 }
                 else
                 {
@@ -110,29 +110,29 @@ void dskRep(string path, string id)
                     fseek(disco, particiones[i].part_start, SEEK_SET);
                     aux = ebr.part_start;
 
-                    while(true)
+                    while (true)
                     {
                         fread(&ebr, sizeof(EBR), 1, disco);
 
-                        if(aux < ebr.part_start)
+                        if (aux < ebr.part_start)
                         {
                             header.append("<td height=\'75\' width=\'100\'> Libre </td>");
                             aux = ebr.part_start;
                         }
 
-                        if(ebr.part_size == 0)
+                        if (ebr.part_size == 0)
                         {
                             header.append("<td height=\'75\' width=\'100\'> EBR </td>");
                             aux = ftell(disco);
                         }
-                        else if(ebr.part_size > 0)
+                        else if (ebr.part_size > 0)
                         {
                             header.append("<td height=\'75\' width=\'100\'> EBR </td>");
                             header.append("<td height=\'75\' width=\'100\'> Logica </td>");
                             aux = ebr.part_start + ebr.part_size;
                         }
 
-                        if(ebr.part_next != -1)
+                        if (ebr.part_next != -1)
                         {
                             fseek(disco, ebr.part_next, SEEK_SET);
                         }
@@ -149,7 +149,7 @@ void dskRep(string path, string id)
             }
         }
 
-        if(aux < mbr.mbr_size)
+        if (aux < mbr.mbr_size)
         {
             header.append("<td height=\'75\' width=\'100\'> Libre </td>");
         }
@@ -158,13 +158,13 @@ void dskRep(string path, string id)
         fputs(header.c_str(), reporte);
         fclose(reporte);
         try
-        {   
+        {
             string cmd = "dot -Tpng repDisk.dot -o ";
             cmd.append(path);
             system(cmd.c_str());
             remove("repDisk.dot");
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
@@ -178,9 +178,9 @@ void mbrRep(string path, string id)
     string ruta;
     PrtMount prt;
     int i = 0;
-    while(i < list.size())
+    while (i < list.size())
     {
-        if(!strcmp(id.c_str(), list[i].id.c_str()))
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
         {
             ruta = list[i].path;
             break;
@@ -188,7 +188,7 @@ void mbrRep(string path, string id)
         i++;
     }
 
-    if(i == list.size())
+    if (i == list.size())
     {
         cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
         getchar();
@@ -203,12 +203,12 @@ void mbrRep(string path, string id)
     FILE *disco = NULL;
     disco = fopen(ruta.c_str(), "rb+"); // Abrir Disco Orginal
 
-    if(disco == NULL)
+    if (disco == NULL)
     {
         ruta = getPathWithName(ruta);
         disco = fopen(ruta.c_str(), "rb+"); // Abrir Disco Copia
 
-        if(disco == NULL)
+        if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
@@ -409,7 +409,7 @@ void mbrRep(string path, string id)
         header.append("</table>\n>\n];\n}");
         fputs(header.c_str(), reporte);
         fclose(reporte);
-        
+
         try
         {
             string cmd = "dot -Tpng repMBR.dot -o ";
@@ -417,7 +417,7 @@ void mbrRep(string path, string id)
             system(cmd.c_str());
             remove("repMBR.dot");
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
@@ -430,9 +430,9 @@ void sbRep(string path, string id)
 
     PrtMount prt;
     int i = 0;
-    while(i < list.size())
+    while (i < list.size())
     {
-        if(!strcmp(id.c_str(), list[i].id.c_str()))
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
         {
             prt = list[i];
             break;
@@ -440,21 +440,21 @@ void sbRep(string path, string id)
         i++;
     }
 
-    if(i == list.size())
+    if (i == list.size())
     {
         cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
         getchar();
         return;
     }
 
-    FILE * disco;
+    FILE *disco;
     disco = fopen(prt.path.c_str(), "rb+");
 
-    if(disco == NULL)
+    if (disco == NULL)
     {
         disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
 
-        if(disco == NULL)
+        if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
@@ -468,7 +468,9 @@ void sbRep(string path, string id)
 
     string header = "digraph G{\ndsk[ shape = box; label = <\n";
     header.append("<table border=\'0\' cellborder=\'2\' width=\'600\' height=\'75\' color=\'LIGHTSTEELBLUE\'>\n");
-    header.append("<tr>\n<td height=\'25\' colspan=\'3\'> ----- SUPERBLOQUE ----- </td>\n</tr>\n");
+    header.append("<tr>\n<td height=\'25\' colspan=\'3\'> ----- SUPERBLOQUE ");
+    header.append(prt.name);
+    header.append(" ----- </td>\n</tr>\n");
 
     // File System
     header.append("<tr>\n<td height=\'25\' width=\'50\'> FileSystem Type </td>\n");
@@ -518,7 +520,7 @@ void sbRep(string path, string id)
     header.append(to_string(sb.s_mnt_count));
     header.append("</td>\n</tr>\n");
 
-    // Magic 
+    // Magic
     header.append("<tr>\n<td height=\'25\' width=\'50\'> Magic </td>\n");
     header.append("<td height=\'25\' width=\'100\'> ");
     header.append(to_string(sb.s_magic));
@@ -596,7 +598,7 @@ void sbRep(string path, string id)
             system(cmd.c_str());
             remove("repSB.dot");
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
@@ -604,7 +606,7 @@ void sbRep(string path, string id)
 }
 
 void bm_blockRep(string path, string id)
-{  
+{
     // Reporte BitMap Bloques
     vector<PrtMount> list = getList();
     PrtMount prt;
@@ -612,7 +614,7 @@ void bm_blockRep(string path, string id)
     int i = 0;
     while (i < list.size())
     {
-        if(!strcmp(id.c_str(), list[i].id.c_str()))
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
         {
             prt = list[i];
             break;
@@ -620,20 +622,20 @@ void bm_blockRep(string path, string id)
         i++;
     }
 
-    if(i == list.size())
+    if (i == list.size())
     {
         cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
         getchar();
         return;
     }
 
-    FILE * disco;
+    FILE *disco;
     disco = fopen(prt.path.c_str(), "rb+");
 
-    if(disco == NULL)
+    if (disco == NULL)
     {
         disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
-        if(disco == NULL)
+        if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
@@ -652,7 +654,7 @@ void bm_blockRep(string path, string id)
 
     while (true)
     {
-        if((sb.s_blocks_count % x) == 0)
+        if ((sb.s_blocks_count % x) == 0)
         {
             y = sb.s_blocks_count / x;
             break;
@@ -665,7 +667,7 @@ void bm_blockRep(string path, string id)
     string header = "digraph G{\ndsk[ shape = box; label = <\n";
     header.append("<table border=\'0\' cellborder=\'2\' width=\'600\' height=\'75\' color=\'LIGHTSTEELBLUE\'>\n");
 
-    for(int i = 0; i < x; i++)
+    for (int i = 0; i < x; i++)
     {
         header.append("<tr>\n");
 
@@ -707,7 +709,7 @@ void bm_blockRep(string path, string id)
             system(cmd.c_str());
             remove("repBM_B.dot");
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
@@ -723,7 +725,7 @@ void bm_inodeRep(string path, string id)
     int i = 0;
     while (i < list.size())
     {
-        if(!strcmp(id.c_str(), list[i].id.c_str()))
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
         {
             prt = list[i];
             break;
@@ -731,21 +733,21 @@ void bm_inodeRep(string path, string id)
         i++;
     }
 
-    if(i == list.size())
+    if (i == list.size())
     {
         cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
         getchar();
         return;
     }
 
-    FILE * disco;
+    FILE *disco;
     disco = fopen(prt.path.c_str(), "rb+");
 
-    if(disco == NULL)
+    if (disco == NULL)
     {
         disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
 
-        if(disco == NULL)
+        if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
@@ -764,7 +766,7 @@ void bm_inodeRep(string path, string id)
 
     while (true)
     {
-        if((sb.s_inodes_count % x) == 0)
+        if ((sb.s_inodes_count % x) == 0)
         {
             y = sb.s_inodes_count / x;
             break;
@@ -777,7 +779,7 @@ void bm_inodeRep(string path, string id)
     string header = "digraph G{\ndsk[ shape = box; label = <\n";
     header.append("<table border=\'0\' cellborder=\'2\' width=\'600\' height=\'75\' color=\'LIGHTSTEELBLUE\'>\n");
 
-    for(int i = 0; i < x; i++)
+    for (int i = 0; i < x; i++)
     {
         header.append("<tr>\n");
 
@@ -819,7 +821,7 @@ void bm_inodeRep(string path, string id)
             system(cmd.c_str());
             remove("repBM_I.dot");
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
@@ -835,7 +837,7 @@ void journalingRep(string path, string id)
     int i = 0;
     while (i < list.size())
     {
-        if(!strcmp(id.c_str(), list[i].id.c_str()))
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
         {
             prt = list[i];
             break;
@@ -843,21 +845,21 @@ void journalingRep(string path, string id)
         i++;
     }
 
-    if(i == list.size())
+    if (i == list.size())
     {
         cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
         getchar();
         return;
     }
 
-    FILE * disco;
+    FILE *disco;
     disco = fopen(prt.path.c_str(), "rb+");
 
-    if(disco == NULL)
+    if (disco == NULL)
     {
         disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
 
-        if(disco == NULL)
+        if (disco == NULL)
         {
             cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
             getchar();
@@ -884,23 +886,23 @@ void journalingRep(string path, string id)
 
         switch (j.journal_tipo_op)
         {
-            case '1':
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Operacion");
-                header.append("</td>\n");
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Nueva Carpeta");
-                header.append("</td>\n");
-                break;
+        case '1':
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Operacion");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Nueva Carpeta");
+            header.append("</td>\n");
+            break;
 
-            case '2':
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Operacion");
-                header.append("</td>\n");
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Nuevo Archivo");
-                header.append("</td>\n");
-                break;
+        case '2':
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Operacion");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Nuevo Archivo");
+            header.append("</td>\n");
+            break;
         }
 
         header.append("</tr>\n");
@@ -908,23 +910,23 @@ void journalingRep(string path, string id)
 
         switch (j.journal_tipo)
         {
-            case '0':
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Tipo");
-                header.append("</td>\n");
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Archivo");
-                header.append("</td>\n");
-                break;
+        case '0':
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Tipo");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Archivo");
+            header.append("</td>\n");
+            break;
 
-            case '1':
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Tipo");
-                header.append("</td>\n");
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Carpeta");
-                header.append("</td>\n");
-                break;
+        case '1':
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Tipo");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Carpeta");
+            header.append("</td>\n");
+            break;
         }
 
         header.append("</tr>\n");
@@ -942,23 +944,23 @@ void journalingRep(string path, string id)
 
         switch (j.journal_contenido)
         {
-            case '0':
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Contenido");
-                header.append("</td>\n");
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("No Hay");
-                header.append("</td>\n");
-                break;
+        case '0':
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Contenido");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("No Hay");
+            header.append("</td>\n");
+            break;
 
-            case '1':
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Contenido");
-                header.append("</td>\n");
-                header.append("<td height=\'30\' width=\'30\'>");
-                header.append("Si Hay");
-                header.append("</td>\n");
-                break;
+        case '1':
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Contenido");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Si Hay");
+            header.append("</td>\n");
+            break;
         }
 
         header.append("</tr>\n");
@@ -975,7 +977,7 @@ void journalingRep(string path, string id)
         header.append("</table>\n>\n];\n");
 
     } while (j.next != -1);
-    
+
     header.append("}");
     fclose(disco);
 
@@ -1000,7 +1002,7 @@ void journalingRep(string path, string id)
             system(cmd.c_str());
             remove("repJ.dot");
         }
-        catch(const std::exception& e)
+        catch (const std::exception &e)
         {
             std::cerr << e.what() << '\n';
         }
@@ -1009,5 +1011,194 @@ void journalingRep(string path, string id)
 
 void inodeRep(string path, string id)
 {
-    
+    // Codigo Reporte Inodos
+    vector<PrtMount> list = getList();
+    PrtMount prt;
+
+    int i = 0;
+    while (i < list.size())
+    {
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
+        {
+            prt = list[i];
+            break;
+        }
+        i++;
+    }
+
+    if (i == list.size())
+    {
+        cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
+        getchar();
+        return;
+    }
+
+    FILE *disco;
+    FILE *discoaux;
+    disco = fopen(prt.path.c_str(), "rb+");
+    discoaux = fopen(prt.path.c_str(), "rb+");
+
+    if (disco == NULL)
+    {
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
+        discoaux = fopen(getPathWithName(prt.path).c_str(), "rb+");
+
+        if (disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
+    }
+
+    SuperBloque sb;
+    fseek(disco, prt.part_start, SEEK_SET);         // Principio De La Particion
+    fread(&sb, sizeof(SuperBloque), 1, disco);      // Leer Superbloque
+    fseek(discoaux, sb.s_bm_inode_start, SEEK_SET); // Posicion Puntero En BitMap Inodos
+    fseek(disco, sb.s_inode_start, SEEK_SET);       // Posicion Puntero En Inodos
+    string header = "digraph G{\n";
+    char bit;
+
+    for (int i = 0; i < sb.s_inodes_count; i++)
+    {
+        fread(&bit, sizeof(bit), 1, discoaux);
+
+        if (bit == '1')
+        {
+            TablaInodos ti;
+            fseek(disco, (i * sizeof(TablaInodos)), SEEK_CUR);
+            fread(&ti, sizeof(TablaInodos), 1, disco);
+            header.append("nodo");
+            header.append(to_string(i));
+            header.append("[ shape = box; label = <\n");
+            header.append("<table border=\'0\' cellborder=\'2\' width=\'100\' height=\'75\' color=\'LIGHTSTEELBLUE\'>\n");
+            header.append("<tr>\n<td height=\'25\' colspan=\'3\'> ----- INODO ----- </td>\n</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("UID");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append(to_string(ti.i_uid));
+            header.append("</td>\n");
+            header.append("</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("GID");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append(to_string(ti.i_gid));
+            header.append("</td>\n");
+            header.append("</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Size");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append(to_string(ti.i_size));
+            header.append("</td>\n");
+            header.append("</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("I_Atime");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append(ti.i_atime);
+            header.append("</td>\n");
+            header.append("</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("I_Ctime");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append(ti.i_ctime);
+            header.append("</td>\n");
+            header.append("</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("I_Mtime");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append(ti.i_mtime);
+            header.append("</td>\n");
+            header.append("</tr>\n");
+
+            header.append("<tr>\n");
+            header.append("<td height=\'30\' width=\'30\'>");
+            header.append("Type");
+            header.append("</td>\n");
+            header.append("<td height=\'30\' width=\'30\'> ");
+            header += ti.i_type;
+            header.append(" </td>\n");
+            header.append("</tr>\n");
+
+            for(int x = 0; x < 15; x++)
+            {
+                header.append("<tr>\n");
+                header.append("<td height=\'30\' width=\'30\'>");
+                header.append("AP");
+                header.append(to_string(x + 1));
+                header.append("</td>\n");
+                header.append("<td height=\'30\' width=\'30\'>");
+                header.append(to_string(ti.i_block[x]));
+                header.append("</td>\n");
+                header.append("</tr>\n");
+            }
+
+            header.append("</table>\n>\n];\n");
+        }
+                
+        fseek(disco, sb.s_inode_start, SEEK_SET);
+    }
+
+    header.append("}");
+    fclose(disco);
+    fclose(discoaux);
+
+    FILE *reporte = NULL;
+    reporte = fopen("repI.dot", "w+");
+    if (reporte == NULL)
+    {
+        // ERROR
+        cout << "\tERROR NO SE PUDO HACER EL REPORTE DEL DISCO..." << endl;
+        getchar();
+        return;
+    }
+    else
+    {
+        fputs(header.c_str(), reporte);
+        fclose(reporte);
+
+        try
+        {
+            string cmd = "dot -Tpng repI.dot -o ";
+            cmd.append(path);
+            system(cmd.c_str());
+            remove("repI.dot");
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+    }
+}
+
+void blockRep(string path, string id)
+{
+    cout << "\tREPORTE DE BLOQUES" << endl;
+}
+
+void treeRep(string path, string id)
+{
+    cout << "\tREPORTE TREE" << endl;
+}
+
+void fileRep(string path, string id)
+{
+    cout << "\tREPORTE FILE" << endl;
 }

@@ -1294,15 +1294,11 @@ void mkfs(string id, string type)
     ti.i_gid = 777;
     ti.i_size = -1;
 
-    t = time(nullptr);
-    tm = *localtime(&t);
-    oss << put_time(&tm, "%d-%m-%Y %H:%M:%S");
-    str = oss.str();
     strcpy(ti.i_atime, str.c_str());
     strcpy(ti.i_ctime, str.c_str());
     strcpy(ti.i_mtime, str.c_str());
 
-    ti.i_block[0] = ftell(disco) + (n*sizeof(TablaInodos));
+    ti.i_block[0] = sb.s_block_start;
 
     for(int i = 1; i < 15; i++)
     {

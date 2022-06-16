@@ -13,4 +13,6 @@ void bm_blockRep(string path, string id);
 void bm_inodeRep(string path, string id);
 void journalingRep(string path, string id);
 void inodeRep(string path, string id);
-
+void blockRep(string path, string id);
+void treeRep(string path, string id);
+void fileRep(string path, string id);
