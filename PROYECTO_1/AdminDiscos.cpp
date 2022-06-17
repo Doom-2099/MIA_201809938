@@ -820,6 +820,19 @@ void mount(string path, string name)
         raid = true;
     }
 
+    for(int i = 0; i < mountList.size(); i++)
+    {
+        if(!strcasecmp(mountList[i].name.c_str(), name.c_str()))
+        {
+            if(!strcmp(mountList[i].path.c_str(), path.c_str()))
+            {
+                cout << "\tLA PARTICION YA SE ENCUENTRA MONTADA..." << endl;
+                getchar();
+                return;
+            }
+        }
+    }
+
     rewind(disco);
     fread(&mbr, sizeof(MBR), 1, disco);
 
@@ -1238,8 +1251,8 @@ void mkfs(string id, string type)
     sb.s_filesystem_type = 3;
     sb.s_inodes_count = n;
     sb.s_blocks_count = 3*n;
-    sb.s_free_blocks_count = 3*n;
-    sb.s_free_inodes_count = n;
+    sb.s_free_blocks_count = (3*n) - 1;
+    sb.s_free_inodes_count = n - 1;
     strcpy(sb.s_mtime, prt.mountDate);
     strcpy(sb.s_umtime, "00/00/0000 00:00:00");
     sb.s_mnt_count += 1;

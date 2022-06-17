@@ -1137,7 +1137,7 @@ void inodeRep(string path, string id)
             header.append(" </td>\n");
             header.append("</tr>\n");
 
-            for(int x = 0; x < 15; x++)
+            for (int x = 0; x < 15; x++)
             {
                 header.append("<tr>\n");
                 header.append("<td height=\'30\' width=\'30\'>");
@@ -1152,7 +1152,7 @@ void inodeRep(string path, string id)
 
             header.append("</table>\n>\n];\n");
         }
-                
+
         fseek(disco, sb.s_inode_start, SEEK_SET);
     }
 
@@ -1188,14 +1188,14 @@ void inodeRep(string path, string id)
     }
 }
 
-void blockRep(string path, string id)
-{
-    cout << "\tREPORTE DE BLOQUES" << endl;
-}
-
 void treeRep(string path, string id)
 {
     cout << "\tREPORTE TREE" << endl;
+}
+
+void blockRep(string path, string id)
+{
+    cout << "\tREPORTE DE BLOQUES" << endl;
 }
 
 void fileRep(string path, string id)
