@@ -1188,14 +1188,143 @@ void inodeRep(string path, string id)
     }
 }
 
+void blockRep(string path, string id)
+{
+    //Codigo Reporte Bloques
+    vector<PrtMount> list = getList();
+    PrtMount prt;
+
+    int i = 0;
+    while (i < list.size())
+    {
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
+        {
+            prt = list[i];
+            break;
+        }
+        i++;
+    }
+
+    if (i == list.size())
+    {
+        cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
+        getchar();
+        return;
+    }
+
+    FILE *disco;
+    FILE *discoaux;
+    disco = fopen(prt.path.c_str(), "rb+");
+    discoaux = fopen(prt.path.c_str(), "rb+");
+
+    if (disco == NULL)
+    {
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
+        discoaux = fopen(getPathWithName(prt.path).c_str(), "rb+");
+
+        if (disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
+    }
+
+    SuperBloque sb;
+    TablaInodos inodo;
+    BloqueCarpeta bcarpet;
+    BloqueApuntadores bapunt;
+    string header = "digraph G{\n";
+    fseek(disco, prt.part_start, SEEK_SET);
+    fread(&sb, sizeof(SuperBloque), 1, disco);
+    fseek(disco, sb.s_bm_inode_start, SEEK_SET); // Leer Bitmap Inodos
+    fseek(discoaux, sb.s_inode_start, SEEK_SET); // Leer Inodos
+
+    char bit;
+    for(int i = 0; i < sb.s_inodes_count; i++)
+    {
+        fread(&bit, sizeof(bit), 1, disco);
+        if(bit == '1')
+        {
+            int pos = sb.s_inode_start + (i * sizeof(TablaInodos));
+            fseek(discoaux, pos, SEEK_SET);
+            fread(&inodo, sizeof(TablaInodos), 1, discoaux);
+
+            if(inodo.i_type == '0')
+            {
+                for(int j = 0; j < 12; j++)
+                {
+                    if(inodo.i_block[j] != -1)
+                    {
+                        fseek(discoaux, inodo.i_block[j], SEEK_SET);
+                        fread(&bcarpet, sizeof(BloqueCarpeta), 1, discoaux);
+                        
+                        header.append("nodo");
+                        header.append(to_string(inodo.i_block[j]));
+                        header.append("[ shape = box; label = <\n");
+                        header.append("<table border=\'0\' cellborder=\'2\' width=\'100\' height=\'75\' color=\'LIGHTSTEELBLUE\'>\n");
+                        header.append("<tr>\n<td height=\'25\' colspan=\'3\'> ----- BLOQUE CARPETA ----- </td>\n</tr>\n");
+
+                        header.append("<tr>\n");
+                        header.append("<td height=\'30\' width=\'30\'>");
+                        header.append("Name");
+                        header.append("</td>\n");
+                        header.append("<td height=\'30\' width=\'30\'>");
+                        header.append(bcarpet.b_content[0].b_name);
+                        header.append("</td>\n");
+                        header.append("</tr>\n");
+
+                        header.append("<tr>\n");
+                        header.append("<td height=\'30\' width=\'30\'>");
+                        header.append("INODO");
+                        header.append("</td>\n");
+                        header.append("<td height=\'30\' width=\'30\'>");
+                        header.append(to_string(bcarpet.b_content[0].b_inodo));
+                        header.append("</td>\n");
+                        header.append("</tr>\n");
+
+                        header.append("</table>\n>\n];\n");
+                    }
+                }
+            }
+        }
+    }
+
+    header.append("}");
+    fclose(disco);
+    fclose(discoaux);
+
+    FILE *reporte = NULL;
+    reporte = fopen("repB.dot", "w+");
+    if (reporte == NULL)
+    {
+        // ERROR
+        cout << "\tERROR NO SE PUDO HACER EL REPORTE DEL DISCO..." << endl;
+        getchar();
+        return;
+    }
+    else
+    {
+        fputs(header.c_str(), reporte);
+        fclose(reporte);
+
+        try
+        {
+            string cmd = "dot -Tpng repB.dot -o ";
+            cmd.append(path);
+            system(cmd.c_str());
+            remove("repB.dot");
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+    }
+}
+
 void treeRep(string path, string id)
 {
     cout << "\tREPORTE TREE" << endl;
-}
-
-void blockRep(string path, string id)
-{
-    cout << "\tREPORTE DE BLOQUES" << endl;
 }
 
 void fileRep(string path, string id)

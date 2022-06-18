@@ -520,7 +520,7 @@ void fdiskDelete(string path, string name, string borrar)
             {
                 char relleno = '\0';
                 fseek(disco, particiones[i].part_start, SEEK_SET);
-                for(int i = 0; i <= particiones[i].part_size; i++)
+                for(int i = 0; i < particiones[i].part_size; i++)
                 {
                     fwrite(&relleno, sizeof(relleno), 1, disco);
                 }
