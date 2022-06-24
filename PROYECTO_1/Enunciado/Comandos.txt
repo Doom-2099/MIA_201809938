@@ -49,16 +49,6 @@ mkfs $id=>vdb2
 /* pause
 /* ----------------------------------
 Mkdir $ID=>vda1 @p $path=>"/home/caballo/hostia/Perro/"
-Mkdir $ID=>vda1 $path=>"/usr/"
-Mkdir $ID=>vda1 $path=>"/var/"
-Mkdir $ID=>vda1 $path=>"/temp/"
-Mkdir $ID=>vda1 $path=>"/dev/"
-Mkdir $ID=>vda1 $path=>"/run/"
-Mkdir $ID=>vda1 $path=>"/snap/"
-Mkdir $ID=>vda1 $path=>"/sys/"
-Mkdir $ID=>vda1 $path=>"/proc/"
-Mkdir $ID=>vda1 $path=>"/lib/"
-Mkdir $ID=>vda1 $path=>"/bin/"
 /* -------------------------------------------
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco172.png" $name=>inode $id=>vda1
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco173.png" $name=>block $id=>vda1
@@ -66,8 +56,11 @@ rep $path=>"/home/jorge/Escritorio/Disco1/Disco142.png" $name=>bm_block $id=>vda
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco143.png" $name=>bm_inode $id=>vda1
 /* ---------------------------------------------------------------------------
 Mkdir $ID=>vda1 $path=>"/var/cache/"
-Mkdir $ID=>vda1 @p $path=>"/bin/msp/usrc/arduino/"
+Mkdir $ID=>vda1 $path=>"/var"
+Mkdir $ID=>vda1 @p $path=>"/bin/msp/ussr/arduino/"
 Mkdir $ID=>vda1 @p $path=>"/bin/msp/proteus/LabCenter/"
 /* ----------------------------------
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco172.png" $name=>inode $id=>vda1
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco173.png" $name=>block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco142.png" $name=>bm_block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco143.png" $name=>bm_inode $id=>vda1

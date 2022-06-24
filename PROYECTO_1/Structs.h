@@ -120,6 +120,7 @@ struct PrtMount
     char part_fit;
     int part_start;
     int part_size;
+    char mkfs = '0';
     char mountDate[20];
 };
 

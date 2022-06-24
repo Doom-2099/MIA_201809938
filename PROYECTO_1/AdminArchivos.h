@@ -8,6 +8,7 @@ using namespace std;
 
 void mkfile(string id, string path, bool p, int size, string cont);
 void mkdir(string id, string path, bool p);
+void synchronice(string id, string path);
 void rm(string id, vector<string>files);
 void cp(string id, string path, string dest, string iddest);
 void find(string id, string path, string name);

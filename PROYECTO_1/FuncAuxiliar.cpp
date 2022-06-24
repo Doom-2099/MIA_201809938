@@ -166,3 +166,14 @@ FILE* obtenerFile(string path, bool raid)
         return fopen(getPathWithName(path).c_str(), "rb+");
     }
 }
+
+string getDate()
+{
+    auto t = time(nullptr);
+    auto tm = *localtime(&t);
+    ostringstream oss;
+    oss << put_time(&tm, "%d-%m-%Y %H:%M:%S");
+    auto str = oss.str();
+
+    return str;
+}

@@ -855,6 +855,7 @@ void mount(string path, string name)
                 prt.part_start = particiones[i].part_start;
                 prt.part_size = particiones[i].part_size;
                 prt.part_fit = particiones[i].part_fit;
+                prt.mkfs = '1';
                 particiones[i].part_status = '1';
 
                 switch (i)
@@ -932,6 +933,7 @@ void mount(string path, string name)
                 prt.part_start = particiones[i].part_start;
                 prt.part_size = particiones[i].part_size;
                 prt.part_fit = particiones[i].part_fit;
+                prt.mkfs = '1';
                 particiones[i].part_status = '1';
 
                 switch (i)
@@ -1002,6 +1004,7 @@ void mount(string path, string name)
                         prt.part_start = ebr.part_start;
                         prt.part_size = ebr.part_size;
                         prt.part_fit = ebr.part_fit;
+                        prt.mkfs = '1';
                         
                         auto t = time(nullptr);
                         auto tm = *localtime(&t);
@@ -1045,6 +1048,7 @@ void mount(string path, string name)
                         prt.part_start = ebr.part_start;
                         prt.part_size = ebr.part_size;
                         prt.part_fit = ebr.part_fit;
+                        prt.mkfs = '1';
 
                         auto t = time(nullptr);
                         auto tm = *localtime(&t);
@@ -1082,8 +1086,15 @@ void printMount()
         cout << "\t---------------- " << mountList[i].name << " ---------------" << endl;
         cout << "\tID: " << mountList[i].id << endl;
         cout << "\tPATH: " << mountList[i].path << endl;
-        cout << "\tFECHA: " << mountList[i].mountDate << endl
-             << endl;
+        cout << "\tFECHA: " << mountList[i].mountDate << endl;
+        if(mountList[i].mkfs == '0')
+        {
+            cout << "\tFORMATEADA: NO" << endl; 
+        }
+        else 
+        {
+            cout << "\tFORMATEADA: SI" << endl;
+        }
     }
 
     getchar();
@@ -1332,6 +1343,8 @@ void mkfs(string id, string type)
 
     fwrite(&bc, sizeof(BloqueCarpeta), 1, disco);
     fclose(disco);
+
+    prt.mkfs = '1';
 
     if(raid)
     {

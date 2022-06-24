@@ -31,7 +31,7 @@ void mkfile(string id, string path, bool p, int size, string cont)
 
     if (disco == NULL)
     {
-        disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+");    // Abrir Disco Copia
         discoaux = fopen(getPathWithName(prt.path).c_str(), "rb+"); // FILE auxiliar
 
         if (disco == NULL)
@@ -84,7 +84,7 @@ void mkdir(string id, string path, bool p)
 
     if (disco == NULL)
     {
-        disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+");    // Abrir Disco Copia
         discoaux = fopen(getPathWithName(prt.path).c_str(), "rb+"); // FILE auxiliar
 
         if (disco == NULL)
@@ -114,405 +114,352 @@ void mkdir(string id, string path, bool p)
     strcpy(pathAux, path.c_str());
     char *partRoute = strtok(pathAux, "/");
 
-    TablaInodos inodo;
+    TablaInodos inodo; // Variable Del Metodo
     fseek(disco, sb.s_inode_start, SEEK_SET);
-    fread(&inodo, sizeof(TablaInodos), 1, disco);   // Lectura Primer Inodo
+    fread(&inodo, sizeof(TablaInodos), 1, disco); // Lectura Primer Inodo
     int lastInode = ftell(disco);
 
-    BloqueCarpeta bc;
+    BloqueCarpeta bloqueC; // Variable Del Metodo
     fseek(disco, sb.s_block_start, SEEK_SET);
-    fread(&bc, sizeof(BloqueCarpeta), 1, disco);    // Lectura Primer Bloque
+    fread(&bloqueC, sizeof(BloqueCarpeta), 1, disco); // Lectura Primer Bloque
     int lastBlock = ftell(disco);
+    int posBlock;
+    int posInode;
+    string date = getDate();
 
-    do
+    // Metodo MKDIR
+    if (p)
     {
-        if (p)
-        { 
-            if(bc.b_content[0].b_inodo == -1)
+        // RUTA COMPLETA INEXISTENTE
+        while (partRoute != NULL)
+        {
+            // Buscar Carpeta
+            if (bloqueC.b_content[0].b_inodo != -1)
             {
-                // INODO CON METADATOS
-                TablaInodos ti;
-                ti.i_uid = 777;
-                ti.i_gid = 777;
-                ti.i_size = -1;
+                fseek(disco, bloqueC.b_content[0].b_inodo, SEEK_SET);
+                fread(&inodo, sizeof(TablaInodos), 1, disco);
+                lastInode = ftell(disco);
 
-                ti.i_type = '0';
-
-                auto t = time(nullptr);
-                auto tm = *localtime(&t);
-                ostringstream oss;
-                oss << put_time(&tm, "%d-%m-%Y %H:%M:%S");
-                auto str = oss.str();
-                strcpy(ti.i_atime, str.c_str());
-                strcpy(ti.i_ctime, str.c_str());
-                strcpy(ti.i_mtime, str.c_str());
-
-                for(int i = 0; i < 15; i++)
+                for (i = 0; i < 12; i++)
                 {
-                    ti.i_block[i] = -1;
-                }
-
-                // BLOQUE CON METADATOS
-                BloqueCarpeta bcarpeta;
-                strcpy(bcarpeta.b_content[0].b_name, partRoute);
-                bcarpeta.b_content[0].b_inodo = -1;
-
-                char bit;
-                fseek(discoaux, sb.s_bm_block_start, SEEK_SET); // Posicion En BitMap Bloques
-                i = 0;
-                while (i < sb.s_blocks_count)
-                {
-                    fread(&bit, sizeof(bit), 1, discoaux);
-
-                    if (bit == '0')
+                    if (inodo.i_block[i] != -1)
                     {
-                        int posBlock = sb.s_block_start + (i * sizeof(BloqueCarpeta));
-                        for (int x = 0; i < 12; i++)
+                        fseek(disco, inodo.i_block[i], SEEK_SET);
+                        fread(&bloqueC, sizeof(BloqueCarpeta), 1, disco);
+                        if (!strcasecmp(bloqueC.b_content[0].b_name, partRoute))
                         {
-                            if (ti.i_block[x] == -1)
-                            {
-                                ti.i_block[x] = posBlock;
-                                break;
-                            }
+                            break;
                         }
-
-                        fseek(discoaux, -sizeof(bit), SEEK_CUR);
-                        bit = '1';
-                        fwrite(&bit, sizeof(bit), 1, discoaux);
-                        bit = '0';
-                        sb.s_free_blocks_count--;
-
-                        fseek(discoaux, posBlock, SEEK_SET);
-                        fwrite(&bcarpeta, sizeof(BloqueCarpeta), 1, discoaux);
-                        break;
                     }
-                    i++;
                 }
 
-                fseek(discoaux, sb.s_bm_inode_start, SEEK_SET);
-                i = 0;
-                while (i < sb.s_inodes_count)
+                if (i < 12)
                 {
-                    fread(&bit, sizeof(bit), 1, discoaux);
-
-                    if (bit == '0')
+                    // SI EXISTE LA CARPETA
+                    partRoute = strtok(NULL, "/");
+                    continue;
+                }
+                else
+                {
+                    // NO EXISTE LA CARPETA
+                    i = 0;
+                    while (i < 12)
                     {
-                        fseek(discoaux, -sizeof(bit), SEEK_CUR);
-                        bit = '1';
-                        fwrite(&bit, sizeof(bit), 1, discoaux);
-                        bit = '0';
-                        sb.s_free_inodes_count--;
-
-                        int posInode = sb.s_inode_start + (i * sizeof(TablaInodos));
-                        bc.b_content[0].b_inodo = posInode;
-                        fseek(discoaux, posInode, SEEK_SET);
-                        fwrite(&ti, sizeof(TablaInodos), 1, discoaux);
-                        break;
+                        if (inodo.i_block[i] == -1)
+                        {
+                            break;
+                        }
+                        i++;
                     }
 
-                    i++;
-                }
+                    if (i == 12)
+                    {
+                        cout << "\tERROR, LA CARPETA NO PUEDE TENER OTRA CARPETA ANIDADA..." << endl;
+                        getchar();
+                        fclose(disco);
+                        fclose(discoaux);
+                        return;
+                    }
 
-                fseek(disco, lastBlock, SEEK_SET);
-                fseek(disco, -sizeof(BloqueCarpeta), SEEK_CUR);
-                fwrite(&bc, sizeof(BloqueCarpeta), 1, disco);
-                bc = bcarpeta;
-                lastBlock = ftell(disco) + sizeof(BloqueCarpeta);
-                partRoute = strtok(NULL, "/");
+                    BloqueCarpeta newFolder;
+                    strcpy(newFolder.b_content[0].b_name, partRoute);
+                    newFolder.b_content[0].b_inodo = -1;
+
+                    char bit;
+                    fseek(discoaux, sb.s_bm_block_start, SEEK_SET);
+                    for (int x = 0; x < sb.s_blocks_count; x++)
+                    {
+                        fread(&bit, sizeof(bit), 1, discoaux);
+                        if (bit == '0')
+                        {
+                            posBlock = sb.s_block_start + (x * sizeof(BloqueCarpeta));
+                            fseek(discoaux, -sizeof(bit), SEEK_CUR);
+                            bit = '1';
+                            fwrite(&bit, sizeof(bit), 1, discoaux);
+                            inodo.i_block[i] = posBlock;
+                            fseek(disco, posBlock, SEEK_SET);
+                            fwrite(&newFolder, sizeof(BloqueCarpeta), 1, disco);
+                            lastBlock = ftell(disco);
+                            fseek(disco, lastInode, SEEK_SET);
+                            fseek(disco, -sizeof(TablaInodos), SEEK_CUR);
+                            fwrite(&inodo, sizeof(TablaInodos), 1, disco);
+                            bloqueC = newFolder;
+                            partRoute = strtok(NULL, "/");
+                            break;
+                        }
+                    }
+                }
             }
             else
             {
-                fseek(disco, bc.b_content[0].b_inodo, SEEK_SET);
-                fread(&inodo, sizeof(TablaInodos), 1, disco);
-                lastInode = ftell(disco);
+                // Nuevo Inodo Y Nueva Carpeta
+                TablaInodos newInodo;
+                newInodo.i_uid = 777;
+                newInodo.i_gid = 777;
+                newInodo.i_type = '0';
+                newInodo.i_size = -1;
 
-                int x = 0;
-                while (x < 12)
+                strcpy(newInodo.i_atime, date.c_str());
+                strcpy(newInodo.i_ctime, date.c_str());
+                strcpy(newInodo.i_mtime, date.c_str());
+
+                for (int x = 0; x < 15; x++)
                 {
-                    if(inodo.i_block[x] != -1)
-                    {
-                        fseek(disco, inodo.i_block[x], SEEK_SET);
-                        fread(&bc, sizeof(BloqueCarpeta), 1, disco);
-                        if(!strcasecmp(bc.b_content[0].b_name, partRoute))
-                        {
-                            break;
-                        }
-                    }
-
-                    x++;
+                    newInodo.i_block[x] = -1;
                 }
 
-                if(x < 12)
-                {
-                    partRoute = strtok(NULL, "/");
-                }
-                else
-                {
-                    BloqueCarpeta bcarpeta;
-                    strcpy(bcarpeta.b_content[0].b_name, partRoute);
-                    bcarpeta.b_content[0].b_inodo = -1;
+                BloqueCarpeta newFolder;
+                newFolder.b_content[0].b_inodo = -1;
+                strcpy(newFolder.b_content[0].b_name, partRoute);
 
-                    x = 0;
-                    while (x < 12)
+                char bit;
+                fseek(discoaux, sb.s_bm_block_start, SEEK_SET);
+                for (int x = 0; x < sb.s_blocks_count; x++)
+                {
+                    fread(&bit, sizeof(bit), 1, discoaux);
+                    if (bit == '0')
                     {
-                        if(inodo.i_block[x] == -1)
-                        {
-                            char bit;
-                            fseek(discoaux, sb.s_bm_block_start, SEEK_SET); // Posicion En BitMap Bloques
-                            i = 0;
-                            while (i < sb.s_blocks_count)
-                            {
-                                fread(&bit, sizeof(bit), 1, discoaux);
-                                if (bit == '0')
-                                {
-                                    int posBlock = sb.s_block_start + (i * sizeof(BloqueCarpeta));
-                                    fseek(discoaux, -sizeof(bit), SEEK_CUR);
-                                    bit = '1';
-                                    fwrite(&bit, sizeof(bit), 1, discoaux);
-                                    bit = '0';
-                                    sb.s_free_blocks_count--;
-                                    inodo.i_block[x] = posBlock;
-                                    fseek(discoaux, posBlock, SEEK_SET);
-                                    fwrite(&bcarpeta, sizeof(BloqueCarpeta), 1, discoaux);
-                                    break;
-                                }
-                                i++;
-                            }
-
-                            if(i == sb.s_blocks_count)
-                            {
-                                cout << "\tERROR NO HAY BLOQUES DISPONIBLES..." << endl;
-                                getchar();
-                                return;
-                            }
-                            else
-                            {
-                                break;  
-                            }
-                        }
-                        x++;
+                        posBlock = sb.s_block_start + (x * sizeof(BloqueCarpeta));
+                        fseek(discoaux, -sizeof(bit), SEEK_CUR);
+                        bit = '1';
+                        fwrite(&bit, sizeof(bit), 1, discoaux);
+                        newInodo.i_block[0] = posBlock;
+                        fseek(disco, posBlock, SEEK_SET);
+                        fwrite(&newFolder, sizeof(BloqueCarpeta), 1, disco);
+                        break;
                     }
+                }
 
-                    fseek(disco, lastInode, SEEK_SET);
-                    fseek(disco, -sizeof(TablaInodos), SEEK_CUR);
-                    fwrite(&inodo, sizeof(TablaInodos), 1, disco);
-                    partRoute = strtok(NULL, "/");
+                fseek(discoaux, sb.s_bm_inode_start, SEEK_SET);
+                for (int x = 0; x < sb.s_inodes_count; x++)
+                {
+                    fread(&bit, sizeof(bit), 1, discoaux);
+                    if (bit == '0')
+                    {
+                        posInode = sb.s_inode_start + (x * sizeof(TablaInodos));
+                        fseek(discoaux, -sizeof(bit), SEEK_CUR);
+                        bit = '1';
+                        fwrite(&bit, sizeof(bit), 1, discoaux);
+                        bloqueC.b_content[0].b_inodo = posInode;
+                        fseek(disco, posInode, SEEK_SET);
+                        fwrite(&newInodo, sizeof(TablaInodos), 1, disco);
+                        fseek(disco, lastBlock, SEEK_SET);
+                        fseek(disco, -sizeof(BloqueCarpeta), SEEK_CUR);
+                        fwrite(&bloqueC, sizeof(BloqueCarpeta), 1, disco);
+                        bloqueC = newFolder;
+                        lastBlock = posBlock + sizeof(BloqueCarpeta);
+                        partRoute = strtok(NULL, "/");
+                        break;
+                    }
                 }
             }
         }
-        else
+    }
+    else
+    {
+        // RUTA COMPLETA EXISTENTE
+        while (true)
         {
-            if(bc.b_content[0].b_inodo != -1)
+            if (bloqueC.b_content[0].b_inodo == -1)
             {
-                fseek(disco, bc.b_content[0].b_inodo, SEEK_SET);
-                fread(&inodo, sizeof(TablaInodos), 1, disco);
-                lastInode = ftell(disco);
-
-                int x = 0;
-                while (x < 12)
+                string nombre = partRoute;
+                partRoute = strtok(NULL, "/");
+                if (partRoute != NULL)
                 {
-                    if(inodo.i_block[x] != -1)
+                    cout << "\tERROR LA RUTA ESPECIFICADA NO EXISTE..." << endl;
+                    getchar();
+                    fclose(disco);
+                    fclose(discoaux);
+                    return;
+                }
+                else
+                {
+                    // Nuevo Inodo Y Nueva Carpeta
+                    TablaInodos newInodo;
+                    newInodo.i_uid = 777;
+                    newInodo.i_gid = 777;
+                    newInodo.i_type = '0';
+                    newInodo.i_size = -1;
+
+                    strcpy(newInodo.i_atime, date.c_str());
+                    strcpy(newInodo.i_ctime, date.c_str());
+                    strcpy(newInodo.i_mtime, date.c_str());
+
+                    for (int x = 0; x < 15; x++)
                     {
-                        fseek(disco, inodo.i_block[x], SEEK_SET);
-                        fread(&bc, sizeof(BloqueCarpeta), 1, disco);
-                        if(!strcasecmp(bc.b_content[0].b_name, partRoute))
+                        newInodo.i_block[x] = -1;
+                    }
+
+                    BloqueCarpeta newFolder;
+                    newFolder.b_content[0].b_inodo = -1;
+                    strcpy(newFolder.b_content[0].b_name, nombre.c_str());
+
+                    char bit;
+                    fseek(discoaux, sb.s_bm_block_start, SEEK_SET);
+                    for (int x = 0; x < sb.s_blocks_count; x++)
+                    {
+                        fread(&bit, sizeof(bit), 1, discoaux);
+                        if (bit == '0')
                         {
+                            posBlock = sb.s_block_start + (x * sizeof(BloqueCarpeta));
+                            fseek(discoaux, -sizeof(bit), SEEK_CUR);
+                            bit = '1';
+                            fwrite(&bit, sizeof(bit), 1, discoaux);
+                            newInodo.i_block[0] = posBlock;
+                            fseek(disco, posBlock, SEEK_SET);
+                            fwrite(&newFolder, sizeof(BloqueCarpeta), 1, disco);
                             break;
                         }
                     }
 
-                    x++;
-                }
-
-                if(x < 12)
-                {
-                    partRoute = strtok(NULL, "/");
-                }
-                else
-                {
-                    BloqueCarpeta bcarpeta;
-                    strcpy(bcarpeta.b_content[0].b_name, partRoute);
-                    bcarpeta.b_content[0].b_inodo = -1;
-                    partRoute = strtok(NULL, "/");
-
-                    if(partRoute == NULL)
+                    fseek(discoaux, sb.s_bm_inode_start, SEEK_SET);
+                    for (int x = 0; x < sb.s_inodes_count; x++)
                     {
-                        x = 0;
-                        while (x < 12)
+                        fread(&bit, sizeof(bit), 1, disco);
+                        if (bit == '0')
                         {
-                            if(inodo.i_block[x] == -1)
-                            {
-                                char bit;
-                                fseek(discoaux, sb.s_bm_block_start, SEEK_SET); // Posicion En BitMap Bloques
-                                i = 0;
-                                while (i < sb.s_blocks_count)
-                                {
-                                    fread(&bit, sizeof(bit), 1, discoaux);
-                                    if (bit == '0')
-                                    {
-                                        int posBlock = sb.s_block_start + (i * sizeof(BloqueCarpeta));
-                                        fseek(discoaux, -sizeof(bit), SEEK_CUR);
-                                        bit = '1';
-                                        fwrite(&bit, sizeof(bit), 1, discoaux);
-                                        bit = '0';
-                                        sb.s_free_blocks_count--;
-                                        inodo.i_block[x] = posBlock;
-                                        fseek(discoaux, posBlock, SEEK_SET);
-                                        fwrite(&bcarpeta, sizeof(BloqueCarpeta), 1, discoaux);
-                                        break;
-                                    }
-                                    i++;
-                                }
-
-                                if(i == sb.s_blocks_count)
-                                {
-                                    cout << "\tERROR NO HAY BLOQUES DISPONIBLES..." << endl;
-                                    getchar();
-                                    return;
-                                }
-                                else
-                                {
-                                    break;  
-                                }
-                            }
-                            x++;
+                            posInode = sb.s_inode_start + (x * sizeof(TablaInodos));
+                            fseek(discoaux, -sizeof(bit), SEEK_CUR);
+                            bit = '1';
+                            fwrite(&bit, sizeof(bit), 1, discoaux);
+                            bloqueC.b_content[0].b_inodo = posInode;
+                            fseek(disco, posInode, SEEK_SET);
+                            fwrite(&newInodo, sizeof(TablaInodos), 1, disco);
+                            fseek(disco, lastBlock, SEEK_SET);
+                            fseek(disco, -sizeof(BloqueCarpeta), SEEK_CUR);
+                            fwrite(&bloqueC, sizeof(BloqueCarpeta), 1, disco);
+                            bloqueC = newFolder;
+                            lastBlock = posBlock + sizeof(BloqueCarpeta);
+                            fclose(disco);
+                            fclose(discoaux);
+                            return;
                         }
-                        
-                        fseek(disco, lastInode, SEEK_SET);
-                        fseek(disco, -sizeof(TablaInodos), SEEK_CUR);
-                        fwrite(&inodo, sizeof(TablaInodos), 1, disco);
+                    }
+                }
+            }
+            else
+            {
+                fseek(disco, bloqueC.b_content[0].b_inodo, SEEK_SET);
+                fread(&inodo, sizeof(TablaInodos), 1, disco);
+                lastInode = ftell(disco);
+
+                i = 0;
+                while (i < 12)
+                {
+                    if (inodo.i_block[i] != -1)
+                    {
+                        fseek(disco, inodo.i_block[i], SEEK_SET);
+                        fread(&bloqueC, sizeof(BloqueCarpeta), 1, disco);
+                        if (!strcasecmp(partRoute, bloqueC.b_content[0].b_name))
+                        {
+                            partRoute = strtok(NULL, "/");
+                            break;
+                        }
+                    }
+
+                    i++;
+                }
+
+                if (i < 12)
+                {
+                    string nombre = partRoute;
+                    partRoute = strtok(NULL, "/");
+                    if (partRoute == NULL)
+                    {
+                        return;
                     }
                     else
                     {
-                        cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+                        continue;
+                    }
+                }
+                else
+                {
+                    string nombre = partRoute;
+                    partRoute = strtok(NULL, "/");
+                    if (partRoute == NULL)
+                    {
+                        i = 0;
+                        while (i < 12)
+                        {
+                            if (inodo.i_block[i] == -1)
+                            {
+                                break;
+                            }
+                            i++;
+                        }
+
+                        if (i == 12)
+                        {
+                            cout << "\tERROR, LA CARPETA NO PUEDE TENER OTRA CARPETA ANIDADA..." << endl;
+                            getchar();
+                            fclose(disco);
+                            fclose(discoaux);
+                            return;
+                        }
+
+                        BloqueCarpeta newFolder;
+                        strcpy(newFolder.b_content[0].b_name, nombre.c_str());
+                        newFolder.b_content[0].b_inodo = -1;
+
+                        char bit;
+                        fseek(discoaux, sb.s_bm_block_start, SEEK_SET);
+                        for (int x = 0; x < sb.s_blocks_count; x++)
+                        {
+                            fread(&bit, sizeof(bit), 1, discoaux);
+                            if (bit == '0')
+                            {
+                                posBlock = sb.s_block_start + (x * sizeof(BloqueCarpeta));
+                                fseek(discoaux, -sizeof(bit), SEEK_CUR);
+                                bit = '1';
+                                fwrite(&bit, sizeof(bit), 1, discoaux);
+                                inodo.i_block[i] = posBlock;
+                                fseek(disco, posBlock, SEEK_SET);
+                                fwrite(&newFolder, sizeof(BloqueCarpeta), 1, disco);
+                                fseek(disco, lastInode, SEEK_SET);
+                                fseek(disco, -sizeof(TablaInodos), SEEK_CUR);
+                                fwrite(&inodo, sizeof(TablaInodos), 1, disco);
+                                bloqueC = newFolder;
+                                partRoute = strtok(NULL, "/");
+                                fclose(disco);
+                                fclose(discoaux);
+                                return;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        cout << "\tERROR LA RUTA INGRESADA ES INCORRECTA..." << endl;
                         getchar();
+                        fclose(disco);
+                        fclose(discoaux);
                         return;
                     }
                 }
             }
-            else
-            {
-                BloqueCarpeta bcarpeta;
-                strcpy(bcarpeta.b_content[0].b_name, partRoute);
-                bcarpeta.b_content[0].b_inodo = -1;
-                partRoute = strtok(NULL, "/");
-
-                if(partRoute == NULL)
-                {
-                    TablaInodos ti;
-                    ti.i_uid = 777;
-                    ti.i_gid = 777;
-                    ti.i_size = -1;
-
-                    ti.i_type = '0';
-
-                    auto t = time(nullptr);
-                    auto tm = *localtime(&t);
-                    ostringstream oss;
-                    oss << put_time(&tm, "%d-%m-%Y %H:%M:%S");
-                    auto str = oss.str();
-                    strcpy(ti.i_atime, str.c_str());
-                    strcpy(ti.i_ctime, str.c_str());
-                    strcpy(ti.i_mtime, str.c_str());
-
-                    for(int i = 0; i < 15; i++)
-                    {
-                        ti.i_block[i] = -1;
-                    }
-                    
-                    char bit;
-                    fseek(discoaux, sb.s_bm_block_start, SEEK_SET); // Posicion En BitMap Bloques
-                    i = 0;
-                    while (i < sb.s_blocks_count)
-                    {
-                        fread(&bit, sizeof(bit), 1, discoaux);
-
-                        if (bit == '0')
-                        {
-                            int posBlock = sb.s_block_start + (i * sizeof(BloqueCarpeta));
-                            ti.i_block[0] = posBlock;
-                            fseek(discoaux, -sizeof(bit), SEEK_CUR);
-                            bit = '1';
-                            fwrite(&bit, sizeof(bit), 1, discoaux);
-                            bit = '0';
-                            sb.s_free_blocks_count--;
-                            fseek(discoaux, posBlock, SEEK_SET);
-                            fwrite(&bcarpeta, sizeof(BloqueCarpeta), 1, discoaux);
-                            break;
-                        }
-                        i++;
-                    }
-
-                    fseek(discoaux, sb.s_bm_inode_start, SEEK_SET);
-                    i = 0;
-                    while (i < sb.s_inodes_count)
-                    {
-                        fread(&bit, sizeof(bit), 1, discoaux);
-
-                        if (bit == '0')
-                        {
-                            fseek(discoaux, -sizeof(bit), SEEK_CUR);
-                            bit = '1';
-                            fwrite(&bit, sizeof(bit), 1, discoaux);
-                            bit = '0';
-                            sb.s_free_inodes_count--;
-
-                            int posInode = sb.s_inode_start + (i * sizeof(TablaInodos));
-                            bc.b_content[0].b_inodo = posInode;
-                            fseek(discoaux, posInode, SEEK_SET);
-                            fwrite(&ti, sizeof(TablaInodos), 1, discoaux);
-                            break;
-                        }
-
-                        i++;
-                    }
-
-                    fseek(disco, lastBlock, SEEK_SET);
-                    fseek(disco, -sizeof(BloqueCarpeta), SEEK_CUR);
-                    fwrite(&bc, sizeof(BloqueCarpeta), 1, disco);
-                    lastBlock = ftell(disco) + sizeof(BloqueCarpeta);
-                    partRoute = strtok(NULL, "/");
-                }
-                else
-                {
-                    cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
-                    getchar();
-                    return;
-                }
-            }
-        }
-    } while (partRoute != NULL);
-
-    fseek(disco, prt.part_start, SEEK_SET);
-    fwrite(&sb, sizeof(SuperBloque), 1, disco);
-
-    Journal j;
-    j.journal_contenido = '1';
-    
-    auto t = time(nullptr);
-    auto tm = *localtime(&t);
-    ostringstream oss;
-    oss << put_time(&tm, "%d-%m-%Y %H:%M:%S");
-    auto str = oss.str();
-    strcpy(j.journal_fecha, str.c_str());
-
-    strcpy(j.journal_nombre, path.c_str());
-    j.journal_tipo = '1';
-    j.journal_tipo_op = Operation::NEW_CARPET;
-    j.next = -1;
-
-    Journal journal;
-
-    while (true)
-    {
-        fread(&journal, sizeof(Journal), 1, disco);
-        if(journal.next == -1)
-        {
-            fwrite(&j, sizeof(Journal), 1, disco);
-            break;
         }
     }
-    
+
     fclose(disco);
     fclose(discoaux);
 
@@ -524,6 +471,11 @@ void mkdir(string id, string path, bool p)
         cmd.append(getPathWithName(prt.path));
         system(cmd.c_str());
     }
+}
+
+void synchronice(string id, string path)
+{
+    // Comando Synchronice
 }
 
 void rm(string id, vector<string> files)

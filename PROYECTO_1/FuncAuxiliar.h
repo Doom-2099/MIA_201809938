@@ -7,6 +7,11 @@
 #include <dirent.h>
 #include <fstream>
 #include <string.h>
+#include <iomanip>
+#include <ctime>
+#include <stdio.h>
+#include <cstring>
+#include <sys/stat.h>
 #include "Structs.h"
 
 using namespace std;
@@ -21,3 +26,4 @@ string getPath(string path, string name);
 string getPathWithName(string path);
 int getNum(vector<PrtMount> list, string path);
 FILE* obtenerFile(string path, bool raid);
+string getDate();

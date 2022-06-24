@@ -706,6 +706,65 @@ void analizarComando(string comando)
             return;
         }
     }
+    else if(!strcasecmp(parametros[0].c_str(), "syncronice"))
+    {
+        string id = "";
+        string path = "";
+
+        for(int i = 1; i < parametros.size(); i++)
+        {
+            char aux[50];
+            strcpy(aux, parametros[i].c_str());
+            partComand = strtok(aux, del);
+
+            if(!strcasecmp(partComand, "@id"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    id = toLowerCase(partComand);
+                }
+            }
+            else if(!strcasecmp(partComand, "@path"))
+            {
+                partComand = strtok(NULL, del);
+                if(partComand != NULL)
+                {
+                    path = partComand;
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                    path.erase(find(path.begin(), path.end(), '\"'));
+                }
+            }
+            else 
+            {
+                cout << "\tERROR EL PARAMETRO " << partComand << " ES INCORRECTO..." << endl;
+                getchar();
+                return;
+            }
+        }
+
+        // Validaciones
+        if(id != "")
+        {
+            if(path != "")
+            {
+                synchronice(id, path);
+            }
+            else
+            {
+                cout << "\tERROR EL PATH NO SE HA ESPECIFICADO..." << endl;
+                getchar();
+                return;
+            }
+            
+        }
+        else
+        {
+            cout << "\tERROR EL ID NO SE HA ESPECIFICADO..." << endl;
+            getchar();
+            return;
+        }
+    }
     else if(!strcasecmp(parametros[0].c_str(), "rm"))
     {
         string id = "";
