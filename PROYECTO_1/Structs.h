@@ -130,8 +130,14 @@ struct TypeBlock
     char type;
 };
 
+struct Tree
+{
+    string nodes;
+    string links;
+};
+
 enum Operation
 {
     NEW_CARPET = '1',
-    NEW_FILE = '2'
 };
+

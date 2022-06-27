@@ -177,3 +177,105 @@ string getDate()
 
     return str;
 }
+
+Tree recorrerFS(FILE *disco, int pos_inode, string padre)
+{
+    Tree tree;
+    string nodos;
+    string nodo;
+    string link;
+    TablaInodos inodo;
+    fseek(disco, pos_inode, SEEK_SET);
+    fread(&inodo, sizeof(TablaInodos), 1, disco);
+
+    for(int i = 0; i < 12; i++)
+    {
+        if(inodo.i_block[i] != -1)
+        {
+            BloqueCarpeta carpeta;
+            fseek(disco, inodo.i_block[i], SEEK_SET);
+            fread(&carpeta, sizeof(BloqueCarpeta), 1, disco);
+
+            nodos.append("node");
+            nodos.append(to_string(inodo.i_block[i]));
+
+            nodo.append("node");
+            nodo.append(to_string(inodo.i_block[i]));
+
+            nodos.append("[label=\"");
+            nodos.append(carpeta.b_content[0].b_name);
+            nodos.append("\"];\n");
+
+            if(padre != "")
+            {
+                link.append(padre);
+                link.append("->");
+                link.append(nodo);
+                link.append(";\n");
+            }
+
+            tree.nodes.append(nodos);
+            tree.links.append(link);
+            link  = "";
+
+            if(carpeta.b_content[0].b_inodo != -1)
+            {
+                Tree aux;
+                aux = recorrerFS(disco, carpeta.b_content[0].b_inodo, nodo);
+                tree.nodes.append(aux.nodes);
+                tree.links.append(aux.links);
+            }
+            nodo = "";
+        }
+    }
+
+    return tree;
+}
+
+string constructJson(FILE *disco, int pos_inode)
+{
+    TablaInodos inodo;
+    string nodo;
+    string nodos;
+    fseek(disco, pos_inode, SEEK_SET);
+    fread(&inodo, sizeof(TablaInodos), 1, disco);
+
+    for(int i = 0; i < 12; i++)
+    {
+        if(inodo.i_block[i] != -1)
+        {
+            BloqueCarpeta carpeta;
+            fseek(disco, inodo.i_block[i], SEEK_SET);
+            fread(&carpeta, sizeof(BloqueCarpeta), 1, disco);
+
+            nodo.append("{\n\"name\":");
+            nodo.append("\"");
+            nodo.append(carpeta.b_content[0].b_name);
+            nodo.append("\"");
+            nodo.append(",\n");
+            nodo.append("\"type\":\"0\",\n");
+            nodo.append("\"hijos\":[\n");
+            
+            if(carpeta.b_content[0].b_inodo != -1)
+            {
+                nodo.append(constructJson(disco, carpeta.b_content[0].b_inodo));    
+            }
+
+            nodo.append("]\n");
+
+            if(inodo.i_block[i + 1] != -1 && (i + 1) < 12)
+            {
+                nodo.append("},\n");
+            }
+            else
+            {
+                nodo.append("}\n");
+            }
+
+            nodos.append(nodo);
+            nodo = "";
+        }
+    }
+
+    return nodos;
+}

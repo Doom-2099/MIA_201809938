@@ -27,3 +27,5 @@ string getPathWithName(string path);
 int getNum(vector<PrtMount> list, string path);
 FILE* obtenerFile(string path, bool raid);
 string getDate();
+Tree recorrerFS(FILE *disco, int pos_inode, string padre);
+string constructJson(FILE *disco, int pos_inode);

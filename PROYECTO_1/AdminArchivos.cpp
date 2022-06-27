@@ -2,7 +2,7 @@
 
 void mkfile(string id, string path, bool p, int size, string cont)
 {
-    vector<PrtMount> list = getList();
+    /* vector<PrtMount> list = getList();
 
     int i = 0;
     PrtMount prt;
@@ -51,6 +51,18 @@ void mkfile(string id, string path, bool p, int size, string cont)
     fread(&sb, sizeof(SuperBloque), 1, disco); // Leer Superbloque
 
     // ESCRIBIR ARCHIVOS
+    if(sb.s_free_blocks_count < 0 || sb.s_free_inodes_count < 0)
+    {
+        cout << "\tERROR NO HAY ESPACION EN EL SISTEMA DE ARCHIVOS..." << endl;
+        getchar();
+        return;
+    }
+
+    char pathAux[50];
+    strcpy(pathAux, path.c_str());
+    char *partRoute = strtok(pathAux, "/"); */
+
+    // MKFILE
 }
 
 void mkdir(string id, string path, bool p)
@@ -148,6 +160,7 @@ void mkdir(string id, string path, bool p)
                         fread(&bloqueC, sizeof(BloqueCarpeta), 1, disco);
                         if (!strcasecmp(bloqueC.b_content[0].b_name, partRoute))
                         {
+                            lastBlock = ftell(disco);
                             break;
                         }
                     }
@@ -335,7 +348,7 @@ void mkdir(string id, string path, bool p)
                     fseek(discoaux, sb.s_bm_inode_start, SEEK_SET);
                     for (int x = 0; x < sb.s_inodes_count; x++)
                     {
-                        fread(&bit, sizeof(bit), 1, disco);
+                        fread(&bit, sizeof(bit), 1, discoaux);
                         if (bit == '0')
                         {
                             posInode = sb.s_inode_start + (x * sizeof(TablaInodos));
@@ -372,7 +385,7 @@ void mkdir(string id, string path, bool p)
                         fread(&bloqueC, sizeof(BloqueCarpeta), 1, disco);
                         if (!strcasecmp(partRoute, bloqueC.b_content[0].b_name))
                         {
-                            partRoute = strtok(NULL, "/");
+                            lastBlock = ftell(disco);
                             break;
                         }
                     }
@@ -386,7 +399,10 @@ void mkdir(string id, string path, bool p)
                     partRoute = strtok(NULL, "/");
                     if (partRoute == NULL)
                     {
-                        return;
+                        char xd[50];
+                        strcpy(xd, nombre.c_str());
+                        partRoute = strtok(xd, "/");
+                        continue;
                     }
                     else
                     {
@@ -476,6 +492,83 @@ void mkdir(string id, string path, bool p)
 void synchronice(string id, string path)
 {
     // Comando Synchronice
+    vector<PrtMount> list = getList();
+
+    int i = 0;
+    PrtMount prt;
+    bool raid = false;
+    while (i < list.size())
+    {
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
+        {
+            prt = list[i];
+            break;
+        }
+        i++;
+    }
+
+    if (i == list.size())
+    {
+        cout << "\tERROR LA PARTICION INDICADA NO SE ENCUENTRA MONTADA..." << endl;
+        getchar();
+        return;
+    }
+
+    FILE *disco;
+    FILE *discoaux;
+    disco = fopen(prt.path.c_str(), "rb+");
+    discoaux = fopen(prt.path.c_str(), "rb+");
+
+    if (disco == NULL)
+    {
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+");    // Abrir Disco Copia
+        discoaux = fopen(getPathWithName(prt.path).c_str(), "rb+"); // FILE auxiliar
+
+        if (disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
+    }
+    else
+    {
+        raid = true;
+    }
+
+    SuperBloque sb;
+    fseek(disco, prt.part_start, SEEK_SET);    // Principio De La Particion
+    fread(&sb, sizeof(SuperBloque), 1, disco); // Leer Superbloque
+
+    TablaInodos inodo; // Variable Del Metodo
+    fseek(disco, sb.s_inode_start, SEEK_SET);
+    fread(&inodo, sizeof(TablaInodos), 1, disco); // Lectura Primer Inodo
+    int lastInode = ftell(disco);
+
+    BloqueCarpeta bloqueC; // Variable Del Metodo
+    fseek(disco, sb.s_block_start, SEEK_SET);
+    fread(&bloqueC, sizeof(BloqueCarpeta), 1, disco); // Lectura Primer Bloque
+
+   string content = constructJson(disco, sb.s_inode_start);
+
+    FILE *json = NULL;
+    json = fopen(path.c_str(), "w+");
+    if (json == NULL)
+    {
+        // ERROR
+        cout << "\tERROR NO SE PUDO HACER EL SYNCRONICE DEL DISCO..." << endl;
+        getchar();
+        return;
+    }
+    else
+    {
+        fputs(content.c_str(), json);
+        fclose(json);
+        cout << "\tEL ARCHIVO DE SINCRONIZACION SE HA GENERADO CORRECTAMENTE..." << endl;
+        getchar();
+        return;
+    }
+
 }
 
 void rm(string id, vector<string> files)

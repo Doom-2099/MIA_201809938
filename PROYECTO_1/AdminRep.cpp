@@ -1324,7 +1324,81 @@ void blockRep(string path, string id)
 
 void treeRep(string path, string id)
 {
-    cout << "\tREPORTE TREE" << endl;
+    // Codigo Reporte Tree
+    vector<PrtMount> list = getList();
+    PrtMount prt;
+
+    int i = 0;
+    while (i < list.size())
+    {
+        if (!strcmp(id.c_str(), list[i].id.c_str()))
+        {
+            prt = list[i];
+            break;
+        }
+        i++;
+    }
+
+    if (i == list.size())
+    {
+        cout << "\tERROR LA PARTICION NO SE ENCUENTRA MONTADA..." << endl;
+        getchar();
+        return;
+    }
+
+    FILE *disco;
+    FILE *discoaux;
+    disco = fopen(prt.path.c_str(), "rb+");
+
+    if (disco == NULL)
+    {
+        disco = fopen(getPathWithName(prt.path).c_str(), "rb+"); // Abrir Disco Copia
+
+        if (disco == NULL)
+        {
+            cout << "\tERROR LA RUTA ES INCORRECTA..." << endl;
+            getchar();
+            return;
+        }
+    }
+
+    SuperBloque sb;
+    fseek(disco, prt.part_start, SEEK_SET);     // Principio De La Particion
+    fread(&sb, sizeof(SuperBloque), 1, disco);  // Leer SuperBloque
+    string digraph = "digraph G{\n";
+    Tree tree;
+    tree = recorrerFS(disco, sb.s_inode_start, "");
+    digraph.append(tree.nodes);
+    digraph.append(tree.links);
+    digraph.append("}");
+    fclose(disco);
+
+    FILE *reporte = NULL;
+    reporte = fopen("repTree.dot", "w+");
+    if (reporte == NULL)
+    {
+        // ERROR
+        cout << "\tERROR NO SE PUDO HACER EL REPORTE DEL DISCO..." << endl;
+        getchar();
+        return;
+    }
+    else
+    {
+        fputs(digraph.c_str(), reporte);
+        fclose(reporte);
+
+        try
+        {
+            string cmd = "dot -Tpng repTree.dot -o ";
+            cmd.append(path);
+            system(cmd.c_str());
+            remove("repTree.dot");
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+    }
 }
 
 void fileRep(string path, string id)

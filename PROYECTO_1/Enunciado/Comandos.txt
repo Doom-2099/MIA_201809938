@@ -48,7 +48,7 @@ mkfs $id=>vdb2
 /* rep $path=>"/home/jorge/Escritorio/Disco2/Disco18.png" $name=>block $id=>vdb2
 /* pause
 /* ----------------------------------
-Mkdir $ID=>vda1 @p $path=>"/home/caballo/hostia/Perro/"
+Mkdir $ID=>vda1 @p $path=>"/home/user/boot/newCarpet/"
 /* -------------------------------------------
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco172.png" $name=>inode $id=>vda1
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco173.png" $name=>block $id=>vda1
@@ -64,3 +64,20 @@ rep $path=>"/home/jorge/Escritorio/Disco1/Disco172.png" $name=>inode $id=>vda1
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco173.png" $name=>block $id=>vda1
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco142.png" $name=>bm_block $id=>vda1
 rep $path=>"/home/jorge/Escritorio/Disco1/Disco143.png" $name=>bm_inode $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Discotree.png" $name=>tree $id=>vda1
+Mkdir $ID=>vda1 $path=>"/var/cache"
+pause
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco172.png" $name=>inode $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco173.png" $name=>block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco142.png" $name=>bm_block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco143.png" $name=>bm_inode $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Discotree.png" $name=>tree $id=>vda1
+pause
+Mkdir $ID=>vda1 $path=>"/var/cache/load"
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco172.png" $name=>inode $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco173.png" $name=>block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco142.png" $name=>bm_block $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Disco143.png" $name=>bm_inode $id=>vda1
+rep $path=>"/home/jorge/Escritorio/Disco1/Discotree.png" $name=>tree $id=>vda1
+Mkdir $ID=>vda1 @p $path=>"/var/swap/starlord/NewCarpeta"
+syncronice @id=>vda1 @path=>"/home/jorge/Escritorio/Disco1/Disco1.json"
