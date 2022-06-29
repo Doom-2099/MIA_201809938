@@ -1,0 +1,11 @@
+body {
+    background-image: url('../../assets/Img/Fondo7.jpg');
+    background-size: cover;
+}
+
+#tarjeta {
+    position: fixed;
+    top: 21%;
+    left: 25%;
+    width: 700px;
+}

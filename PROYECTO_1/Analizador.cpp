@@ -1354,21 +1354,36 @@ void analizarComando(string comando)
         // Validaciones
         if(path != "")
         {
-            ifstream archivo(path.c_str());
-            string linea;
+            FILE * archivo;
+            archivo = fopen(path.c_str(), "r");
 
-            while (getline(archivo, linea))
+            if(archivo == NULL)
             {
-                if(strstr(linea.c_str(), "/*") != NULL)
+                cout << "\tERROR EL ARCHIVO NO SE PUDO ABRIR..." << endl;
+                getchar();
+                return;
+            }
+
+            string linea;
+            char buffer[120];
+
+            while (feof(archivo) == 0)
+            {
+                fgets(buffer, 120, archivo);
+                linea = buffer;
+                if(strstr(linea.c_str(), "/*") != NULL || (buffer[0] == '\r' && buffer[1] == '\n'))
                 {
+                    cout << "\t" << linea;
                     continue; 
                 }
 
+                linea.erase(find(linea.begin(), linea.end(), '\r'));
+                linea.erase(find(linea.begin(), linea.end(), '\n'));
                 cout << "\t" << linea << endl;
                 analizarComando(linea);
             }
 
-            archivo.close();
+            fclose(archivo);
         }
         else
         {

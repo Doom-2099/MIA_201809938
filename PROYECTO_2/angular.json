@@ -23,9 +23,17 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/materialize-css/dist/css/materialize.css",
+              "./node_modules/jstree/dist/themes/default-dark/style.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/materialize-css/dist/js/materialize.js",
+              "./node_modules/hammerjs/hammer.js",
+              "./node_modules/jquery/dist/jquery.js",
+              "./node_modules/jstree/dist/jstree.js"
+              
+            ]
           },
           "configurations": {
             "production": {
@@ -90,12 +98,22 @@
               "src/assets"
             ],
             "styles": [
+              "./node_modules/materialize-css/dist/css/materialize.css",
+              "./node_modules/jstree/dist/themes/default-dark/style.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "./node_modules/materialize-css/dist/js/materialize.js",
+              "./node_modules/hammerjs/hammer.js",
+              "./node_modules/jquery/dist/jquery.js",
+              "./node_modules/jstree/dist/jstree.js"
+            ]
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": "e5e76842-2ff4-4816-a3e1-cb241e46ea15"
   }
 }
