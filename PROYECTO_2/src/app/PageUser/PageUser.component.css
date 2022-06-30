@@ -1,0 +1,23 @@
+#logOut {
+    position: fixed;
+    top: 1.8%;
+    right: 2%;
+}
+
+#LogOutIcon {
+    font-size: 2.5rem;
+}
+
+#menuDesp {
+    position: fixed;
+    left: 2.5%;
+    top: 1.8%;
+}
+
+#menuIcon {
+    font-size: 2.7rem;
+}
+
+body {
+    size: 100%;
+}

@@ -1,0 +1,24 @@
+[
+    {
+        "nombre": "Jorge Castaneda",
+        "user": "Administrador",
+        "password": "201809938JorgeCastaneda",
+        "email": "adminArchivos2022@gmail.com",
+        "telefono": 58389473,
+        "fechaRegistro": "Jun 29, 2022",
+        "fechaNacimiento": "",
+        "habilitado": true,
+        "activado": false
+    },
+    {
+        "nombre": "Juan Perez",
+        "user": "juanito",
+        "password": "123456789",
+        "email": "juanperez@gmail.com",
+        "telefono": "58389473",
+        "fechaRegistro": "Jun 29, 2022",
+        "fechaNacimiento": "",
+        "activador": false,
+        "habilitado": false
+    }
+]

@@ -7,3 +7,11 @@
 #LogOutIcon {
     font-size: 2.5rem;
 }
+
+#blockIcon {
+    width: 180px;
+}
+
+body {
+    size: 100%;
+}

@@ -552,7 +552,7 @@ void synchronice(string id, string path)
    string content = constructJson(disco, sb.s_inode_start);
 
     FILE *json = NULL;
-    json = fopen(path.c_str(), "w+");
+    json = fopen("/home/jorge/Escritorio/MIA_201809938/PROYECTO_2/Server/Files/JFiles.json", "w+");
     if (json == NULL)
     {
         // ERROR

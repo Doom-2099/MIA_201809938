@@ -248,12 +248,15 @@ string constructJson(FILE *disco, int pos_inode)
             fseek(disco, inodo.i_block[i], SEEK_SET);
             fread(&carpeta, sizeof(BloqueCarpeta), 1, disco);
 
-            nodo.append("{\n\"name\":");
-            nodo.append("\"");
+            nodo.append("{\n\"name\":\"");
             nodo.append(carpeta.b_content[0].b_name);
-            nodo.append("\"");
-            nodo.append(",\n");
+            nodo.append("\",\n");
             nodo.append("\"type\":\"0\",\n");
+            nodo.append("\"fecha\":\"");
+            nodo.append(inodo.i_ctime);
+            nodo.append("\",\n");
+            nodo.append("\"propietario\":\"\",\n");
+            nodo.append("\"colaboradores\":[],");
             nodo.append("\"hijos\":[\n");
             
             if(carpeta.b_content[0].b_inodo != -1)

@@ -16,12 +16,12 @@
                   <div class="row">
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">face</i>
-                      <input type="text" id="icon_prefix2" class="materialize-textarea white-text">
-                      <label for="icon_prefix2" class="white-text">Nombre Completo</label>
+                      <input type="text" id="icon_prefix" [(ngModel)]="user.nombre" name="user.nombre" class="materialize-textarea white-text">
+                      <label for="icon_prefix" class="white-text">Nombre Completo</label>
                     </div>
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">mail</i>
-                      <input id="email" type="email" class="validate white-text">
+                      <input id="email" type="email" [(ngModel)]="user.email" name="user.email" class="validate white-text">
                       <label for="email" class="white-text">Email</label>
                       <span class="helper-text white-text" data-error="wrong" data-success="right"></span>
                     </div>
@@ -29,30 +29,30 @@
                   <div class="row">
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">account_box</i>
-                      <input type="text" id="icon_prefix2" class="materialize-textarea white-text">
+                      <input type="text" id="icon_prefix2" [(ngModel)]="user.user" name="user.user" class="materialize-textarea white-text">
                       <label for="icon_prefix2" class="white-text">Usuario</label>
                     </div>
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">key</i>
-                      <input type="password" id="icon_prefix2" class="materialize-textarea white-text">
-                      <label for="icon_prefix2 white-text">Password</label>
+                      <input type="password" id="icon_prefix3" [(ngModel)]="user.password" name="user.password" class="materialize-textarea white-text">
+                      <label for="icon_prefix3 white-text">Password</label>
                     </div>
                   </div>
                   <div class="row">
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">phone_in_talk</i>
-                      <input type="tel" id="icon_prefix2" class="materialize-textarea white-text">
-                      <label for="icon_prefix2" class="white-text">Telefono</label>
+                      <input type="tel" id="icon_prefix4" [(ngModel)]="user.telefono" name="user.telefono" class="materialize-textarea white-text">
+                      <label for="icon_prefix4" class="white-text">Telefono</label>
                     </div>
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">calendar_today</i>
-                      <input type="text" class="datepicker white-text">
-                      <label for="icon_prefix2 white-text">Fecha Nacimiento</label>
+                      <input type="text" [(ngModel)]="user.fechaNacimiento" name="user.fechaNacimiento" class="datepicker white-text">
+                      <label for="icon_prefix5" class="white-text">Fecha Nacimiento</label>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col s6 offset-s4">
-                      <a class="waves-effect waves-light btn transparent white-text">
+                      <a (click)="registrarUser()" class="waves-effect waves-light btn transparent white-text">
                         <i class="material-icons right">person_add</i>
                         Registrar Usuario
                       </a>
@@ -66,21 +66,22 @@
                 <form class="col s12">
                   <div class="row">
                     <div class="input-field col s6 offset-s3">
-                      <i class="material-icons prefix white-text">badge</i>
-                      <input type="text" id="icon_prefix2" class="materialize-textarea white-text">
-                      <label for="icon_prefix2" class="white-text">Usuario</label>
+                      <i class="material-icons prefix white-text">mail</i>
+                      <input id="email2" type="email" [(ngModel)]="emailLog" name="emailLog" class="validate white-text">
+                      <label for="email2" class="white-text">Email</label>
+                      <span class="helper-text white-text" data-error="wrong" data-success="right"></span>
                     </div>
                   </div>
                   <div class="row">
                     <div class="input-field col s6 offset-s3">
                       <i class="material-icons prefix white-text">key</i>
-                      <input type="password" id="icon_prefix2" class="materialize-textarea white-text">
-                      <label for="icon_prefix2" class="white-text">Password</label>
+                      <input type="password" id="icon_prefix7" [(ngModel)]="passLog" name="passLog" class="materialize-textarea white-text">
+                      <label for="icon_prefix7" class="white-text">Password</label>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col s3 offset-s5">
-                      <a class="waves-effect waves-light btn transparent white-text">
+                      <a (click)="login()" class="waves-effect waves-light btn transparent white-text">
                         <i class="material-icons right">login</i>
                         Entrar
                       </a>

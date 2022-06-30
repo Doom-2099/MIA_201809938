@@ -1,0 +1,46 @@
+<body class="blue-grey darken-4">
+  <app-Navbar></app-Navbar>
+  <ul id="slide-out" class="sidenav">
+    <li>
+      <div class="user-view">
+        <div class="background">
+          <img src="https://i.pinimg.com/564x/2b/f2/02/2bf202779cee342fafa84d6fee68004c.jpg">
+        </div>
+        <a href="#user"><img class="circle" src="https://cdn-icons-png.flaticon.com/512/7286/7286699.png"></a>
+        <a href="#name"><span class="white-text name">Administrador</span></a>
+        <a href="#email"><span class="white-text email">adminArchivos2022@gmail.com</span></a>
+      </div>
+    </li>
+    <li>
+      <a (click)="flagAccountView()"><i class="material-icons">manage_accounts</i>Cuenta</a>
+    </li>
+    <li>
+      <a (click)="flagCollaboratorView()"><i class="material-icons">people_alt</i>Colaboradores</a>
+    </li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li><a class="subheader">Directorios</a></li>
+    <li>
+      <a (click)="flagFilesView()"><i class="material-icons">folder</i>Folder 1</a>
+    </li>
+    <li>
+      <a (click)="flagFilesView()"><i class="material-icons">folder</i>Foler 2</a>
+    </li>
+    <li>
+      <a (click)="flagFilesView()"><i class="material-icons">folder</i>Foler 3</a>
+    </li>
+    <li>
+      <a (click)="flagCollaboratorView()"><i class="material-icons">folder</i>Foler 4</a>
+    </li>
+  </ul>
+  <a id="menuDesp" data-target="slide-out" class="sidenav-trigger transparent"><i id="menuIcon"
+      class="material-icons white-text">menu</i></a>
+
+  <a id="logOut" class="waves-effect waves-light btn transparent"><i id="LogOutIcon"
+      class="material-icons white-text">exit_to_app</i></a>
+
+      <app-AccountUser *ngIf="getFlagAccount()"></app-AccountUser>
+      <app-CollaboratorUser *ngIf="getFlagCollaborator()"></app-CollaboratorUser>
+      <app-FilesUser *ngIf="getFlagFiles()"></app-FilesUser>
+</body>

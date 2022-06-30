@@ -6,9 +6,4 @@ import { Component } from '@angular/core';
   styleUrls: ['./NotFountComponent.component.css']
 })
 export class NotFountComponentComponent {
-
-  resources() {
-    alert('Cargando Resource');
-  }
-
 }
