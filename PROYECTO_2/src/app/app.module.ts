@@ -8,8 +8,6 @@ import { LoginComponentComponent } from './LoginComponent/LoginComponent.compone
 import { NotFountComponentComponent } from './NotFountComponent/NotFountComponent.component';
 import { PageAdminComponent } from './PageAdmin/PageAdmin.component';
 import { NavbarComponent } from './shared/Navbar/Navbar.component';
-import { UsersAdminComponent } from './UsersAdmin/UsersAdmin.component';
-import { PermisosAdminComponent } from './PermisosAdmin/PermisosAdmin.component';
 import { PageUserComponent } from './PageUser/PageUser.component';
 import { AccountUserComponent } from './AccountUser/AccountUser.component';
 import { CollaboratorUserComponent } from './CollaboratorUser/CollaboratorUser.component';
@@ -25,8 +23,6 @@ import { FormsModule } from '@angular/forms';
     NotFountComponentComponent,
     PageAdminComponent,
     NavbarComponent,
-    UsersAdminComponent,
-    PermisosAdminComponent,
     PageUserComponent,
     AccountUserComponent,
     CollaboratorUserComponent,

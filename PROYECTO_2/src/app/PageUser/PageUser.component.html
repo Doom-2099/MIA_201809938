@@ -37,7 +37,7 @@
   <a id="menuDesp" data-target="slide-out" class="sidenav-trigger transparent"><i id="menuIcon"
       class="material-icons white-text">menu</i></a>
 
-  <a id="logOut" class="waves-effect waves-light btn transparent"><i id="LogOutIcon"
+  <a (click)="Logout()" id="logOut" class="waves-effect waves-light btn transparent"><i id="LogOutIcon"
       class="material-icons white-text">exit_to_app</i></a>
 
       <app-AccountUser *ngIf="getFlagAccount()"></app-AccountUser>

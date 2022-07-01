@@ -33,4 +33,10 @@ export class Session {
     getFlagLog() {
         return this.flagLog;
     }
+
+    clearSession() {
+        this.user = '';
+        this.email = '';
+        this.flagLog = false;
+    }
 }

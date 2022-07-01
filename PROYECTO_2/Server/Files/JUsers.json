@@ -3,22 +3,33 @@
         "nombre": "Jorge Castaneda",
         "user": "Administrador",
         "password": "201809938JorgeCastaneda",
-        "email": "adminArchivos2022@gmail.com",
+        "email": "gerencia.archivos2022@gmail.com",
         "telefono": 58389473,
         "fechaRegistro": "Jun 29, 2022",
         "fechaNacimiento": "",
         "habilitado": true,
-        "activado": false
+        "activador": true
     },
     {
         "nombre": "Juan Perez",
         "user": "juanito",
         "password": "123456789",
-        "email": "juanperez@gmail.com",
+        "email": "jorgecas20000@gmail.com",
         "telefono": "58389473",
         "fechaRegistro": "Jun 29, 2022",
         "fechaNacimiento": "",
-        "activador": false,
+        "activador": true,
         "habilitado": false
+    },
+    {
+        "nombre": "Diego Reyes",
+        "user": "diego",
+        "password": "123456789",
+        "email": "jorgecas20000@gmail.com",
+        "telefono": "24755759",
+        "fechaRegistro": "Jun 30, 2022",
+        "fechaNacimiento": "",
+        "activador": true,
+        "habilitado": true
     }
 ]

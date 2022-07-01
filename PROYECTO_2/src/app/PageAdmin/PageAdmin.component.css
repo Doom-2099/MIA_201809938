@@ -21,3 +21,24 @@
 body {
     size: 100%;
 }
+
+#tree {
+    position: fixed;
+    top: 17.5%;
+    left: 13%;
+}
+
+#permiso {
+    position: fixed;
+    top: 17.5%;
+    left: 50%;
+}
+
+#folders {
+    overflow-y: scroll;
+    height: 450px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}

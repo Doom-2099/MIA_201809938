@@ -22,10 +22,109 @@
     <a id="menuDesp" data-target="slide-out" class="sidenav-trigger transparent"><i id="menuIcon"
             class="material-icons white-text">menu</i></a>
 
-    <a id="logOut" class="waves-effect waves-light btn transparent"><i id="LogOutIcon"
+    <a (click)="Logout()" id="logOut" class="waves-effect waves-light btn transparent"><i id="LogOutIcon"
             class="material-icons white-text">exit_to_app</i></a>
 
     <br><br>
-    <app-UsersAdmin *ngIf="getFlagUserView()"></app-UsersAdmin>
-    <app-PermisosAdmin *ngIf="getFlagPermisoView()"></app-PermisosAdmin>
+
+    <div class="container" *ngIf="getFlagUserView()">
+        <ul class="collapsible popout">
+            <li *ngFor="let user of usuarios">
+                <div class="collapsible-header" [class]="getColor(user)"><i
+                        class="material-icons">account_circle</i>{{user.nombre}}
+                    <span *ngIf="!user.activador" class="new badge red">1</span>
+                    <span *ngIf="!user.habilitado && user.activador" class="new badge orange">1</span>
+                </div>
+                <div class="collapsible-body grey darken-2">
+                    <div class="row">
+                        <div class="input-field col s4 offset-s1">
+                            <input id="Nombre" type="text" disabled value={{user.nombre}} class="white-text">
+                        </div>
+                        <div class="input-field col s4 offset-s2">
+                            <input id="email" type="text" disabled value={{user.email}} class="white-text">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4 offset-s1">
+                            <input id="usuario" type="text" disabled value={{user.user}} class="white-text">
+                        </div>
+                        <div class="input-field col s4 offset-s2">
+                            <input id="telefono" type="text" disabled value={{user.telefono}} class="white-text">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s4 offset-s1">
+                            <input id="nac" type="text" disabled value={{user.fechaNacimiento}} class="white-text">
+                        </div>
+                        <div class="input-field col s4 offset-s2">
+                            <input id="reg" type="text" disabled value={{user.fechaRegistro}} class="white-text">
+                        </div>
+                    </div>
+                    <div class="row center">
+                        <div class="col s4">
+                            <a (click)="activarUser(user)" class="waves-effect waves-light btn green"><i
+                                    class="material-icons left">verified</i>Activar</a>
+                        </div>
+                        <div class="col s4">
+                            <a (click)="habilitarUser(user)" class="waves-effect waves-light btn orange"><i
+                                    class="material-icons left">person_off</i>Habilitar</a>
+                        </div>
+                        <div class="col s4">
+                            <a (click)="desactivarUser(user)" class="waves-effect waves-light btn red"><i
+                                    class="material-icons left">remove_circle_outline</i>Desactivar</a>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div id="tree" class="container" *ngIf="getFlagPermisoView()">
+        <div class="row">
+            <div class="col s6">
+                <div class="card-panel cyan darken-4" style="height: 500px;">
+                    <div class="row">
+                        <div class="col s12" id="folders">
+                            <div class="collection">
+                                <a class="collection-item">Alvin</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="permiso" class="container" *ngIf="getFlagPermisoView()">
+        <div class="row">
+            <div class="col s6">
+                <div class="card-panel transparent" style="height: 500px;">
+                    <br><br><br>
+                    <div class="row">
+                        <div class="input-field col s8 offset-s2">
+                            <input id="nameFolder" type="text" class="white-text">
+                            <label for="nameFolder">Nombre Folder</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8 offset-s2">
+                            <input id="fecha" type="text" class="white-text">
+                            <label for="fecha">Fecha Creacion</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s8 offset-s2">
+                            <input id="Propietario" type="text" class="white-text">
+                            <label for="Propietario">Propietario</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s6 offset-s4">
+                            <a class="waves-effect waves-light btn"><i
+                                    class="material-icons left">border_color</i>Asignar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>

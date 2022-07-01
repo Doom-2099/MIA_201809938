@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as M from 'materialize-css';
+import { Session } from '../Models/Session';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-PageUser',
@@ -12,10 +14,16 @@ export class PageUserComponent implements OnInit {
   private flagCollaborator: boolean = false;
   private flagFiles : boolean = false;
 
-  constructor() { }
+  constructor(private router : Router) { }
 
   ngOnInit() {
     M.AutoInit();
+
+    if(!Session.getInstance().getFlagLog()) {
+      this.router.navigate(['Denied']);
+    } else {
+      // Codigo Necesario
+    }
   }
 
   getFlagAccount() {
@@ -46,6 +54,10 @@ export class PageUserComponent implements OnInit {
     this.flagAccount = false;
     this.flagCollaborator = true;
     this.flagFiles = false;
+  }
+
+  Logout() {
+    this.router.navigate(['']);
   }
 
 }

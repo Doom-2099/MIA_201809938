@@ -18,4 +18,12 @@ export class UserList {
     clearList() {
         this.listaUsers = [];
     }
+
+    getList() {
+        return this.listaUsers;
+    }
+
+    editUser(index:number, usr:Users) {
+        this.listaUsers[index] = usr;
+    }
 }
