@@ -73,18 +73,34 @@ export class LoginComponentComponent implements OnInit {
                      }
 
                   } else {
-                     M.toast({ html: 'Su Cuenta Se Encuentra Inhabilitada' });
+                     M.toast({ html: 'Su Cuenta Se Encuentra Inhabilitada', classes: 'orange white-text' });
                   }
                } else {
-                  M.toast({ html: 'Su Cuenta No Ha Sido Activada' })
+                  M.toast({ html: 'Su Cuenta No Ha Sido Activada', classes: 'red white-text' })
                }
             } else {
-               M.toast({ html: 'Datos Incorrectos' });
+               M.toast({ html: 'Datos Incorrectos', classes: 'red white-text' });
                this.disabled = 'btn';
                this.cont++;
+
+               if (this.cont >= 3) {
+                  this.apiTest.inhabilitarCuentaLogin(this.emailLog)
+                     .subscribe(resp => {
+                        M.toast({ html: 'Su Cuenta Se Ha Inhabilitado', classes: 'orange white-text' });
+                        this.cont = 1;
+                     });
+               }
             }
          });
    }
 
-   
+   recPass() {
+      // Enviar Correo
+      M.toast({ html: 'Solicitud Enviada', classes: 'deep-purple darken-1 white-text' })
+      this.apiTest.codigoRecPass(this.emailLog)
+         .subscribe();
+
+   }
+
+
 }

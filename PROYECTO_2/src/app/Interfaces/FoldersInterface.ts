@@ -3,4 +3,6 @@ export interface Folders {
     type: string;
     propietario: string;
     ruta: string;
+    fecha: string;
+    colaboradores: string[];
 }

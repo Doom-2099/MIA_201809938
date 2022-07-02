@@ -46,7 +46,7 @@
                     </div>
                     <div class="input-field col s6">
                       <i class="material-icons prefix white-text">calendar_today</i>
-                      <input type="text" [(ngModel)]="user.fechaNacimiento" name="user.fechaNacimiento" class="datepicker white-text">
+                      <input type="text" id="icon_prefix5" [(ngModel)]="user.fechaNacimiento" name="user.fechaNacimiento" class="datepicker white-text">
                       <label for="icon_prefix5" class="white-text">Fecha Nacimiento</label>
                     </div>
                   </div>
@@ -89,7 +89,7 @@
                   </div>
                   <div class="row">
                     <div class="col s6 offset-s4">
-                      <a class="waves-effect waves-light transparent white-text" [class]="disabled">
+                      <a (click)="recPass()" class="waves-effect waves-light transparent white-text" [class]="disabled">
                         <i class="material-icons right">key_off</i>
                         Recuperar Password
                       </a>

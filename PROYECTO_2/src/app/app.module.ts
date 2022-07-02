@@ -9,9 +9,6 @@ import { NotFountComponentComponent } from './NotFountComponent/NotFountComponen
 import { PageAdminComponent } from './PageAdmin/PageAdmin.component';
 import { NavbarComponent } from './shared/Navbar/Navbar.component';
 import { PageUserComponent } from './PageUser/PageUser.component';
-import { AccountUserComponent } from './AccountUser/AccountUser.component';
-import { CollaboratorUserComponent } from './CollaboratorUser/CollaboratorUser.component';
-import { FilesUserComponent } from './FilesUser/FilesUser.component';
 import { ResetPasswordComponent } from './ResetPassword/ResetPassword.component';
 import { DeniedPageComponent } from './DeniedPage/DeniedPage.component';
 import { FormsModule } from '@angular/forms';
@@ -24,9 +21,6 @@ import { FormsModule } from '@angular/forms';
     PageAdminComponent,
     NavbarComponent,
     PageUserComponent,
-    AccountUserComponent,
-    CollaboratorUserComponent,
-    FilesUserComponent,
     ResetPasswordComponent,
     DeniedPageComponent
    ],

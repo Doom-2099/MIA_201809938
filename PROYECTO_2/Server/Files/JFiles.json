@@ -9,8 +9,10 @@
             "name": "home",
             "type": "0",
             "fecha": "26-06-2022 22:03:12",
-            "propietario": "",
-            "colaboradores": [],
+            "propietario": "diego",
+            "colaboradores": [
+                "juanito1234"
+            ],
             "hijos": [
                 {
                     "name": "user",
@@ -30,7 +32,7 @@
                                     "name": "newCarpet",
                                     "type": "0",
                                     "fecha": "26-06-2022 22:03:12",
-                                    "propietario": "",
+                                    "propietario": "diego",
                                     "colaboradores": [],
                                     "hijos": []
                                 }
@@ -44,15 +46,17 @@
             "name": "var",
             "type": "0",
             "fecha": "26-06-2022 22:03:12",
-            "propietario": "",
+            "propietario": "juan",
             "colaboradores": [],
             "hijos": [
                 {
                     "name": "cache",
                     "type": "0",
                     "fecha": "26-06-2022 22:03:14",
-                    "propietario": "",
-                    "colaboradores": [],
+                    "propietario": "diego",
+                    "colaboradores": [
+                        "juanito1234"
+                    ],
                     "hijos": [
                         {
                             "name": "load",
@@ -68,8 +72,10 @@
                     "name": "swap",
                     "type": "0",
                     "fecha": "26-06-2022 22:03:14",
-                    "propietario": "",
-                    "colaboradores": [],
+                    "propietario": "diego",
+                    "colaboradores": [
+                        "juanito1234"
+                    ],
                     "hijos": [
                         {
                             "name": "starlord",

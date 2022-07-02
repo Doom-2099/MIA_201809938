@@ -21,4 +21,20 @@ export class FolderList {
     getList() {
         return this.listaFolders;
     }
+
+    editFolder(index:number, folder:Folders) {
+        this.listaFolders[index] = folder;
+    }
+
+    getFoldersUser(user:string) : Folders[] {
+        var folders:Folders[] = [];
+
+        this.listaFolders.forEach((folder) => {
+            if(folder.propietario == user) {
+                folders.push(folder);
+            }
+        })
+
+        return folders;
+    }
 }

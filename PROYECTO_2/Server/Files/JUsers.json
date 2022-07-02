@@ -11,25 +11,27 @@
         "activador": true
     },
     {
+        "nombre": "Diego Reyes",
+        "user": "diego",
+        "password": "starlord10",
+        "email": "jorgecas20000@gmail.com",
+        "telefono": "24755759",
+        "fechaRegistro": "Jun 30, 2022",
+        "fechaNacimiento": "",
+        "activador": true,
+        "habilitado": true,
+        "habilitada": false
+    },
+    {
         "nombre": "Juan Perez",
-        "user": "juanito",
+        "user": "juanito1234",
         "password": "123456789",
         "email": "jorgecas20000@gmail.com",
         "telefono": "58389473",
         "fechaRegistro": "Jun 29, 2022",
         "fechaNacimiento": "",
         "activador": true,
-        "habilitado": false
-    },
-    {
-        "nombre": "Diego Reyes",
-        "user": "diego",
-        "password": "123456789",
-        "email": "jorgecas20000@gmail.com",
-        "telefono": "24755759",
-        "fechaRegistro": "Jun 30, 2022",
-        "fechaNacimiento": "",
-        "activador": true,
-        "habilitado": true
+        "habilitado": true,
+        "habilitada": false
     }
 ]

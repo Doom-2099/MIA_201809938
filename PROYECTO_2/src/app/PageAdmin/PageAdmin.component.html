@@ -85,9 +85,9 @@
                 <div class="card-panel cyan darken-4" style="height: 500px;">
                     <div class="row">
                         <div class="col s12" id="folders">
-                            <div class="collection">
-                                <a class="collection-item">Alvin</a>
-                            </div>
+                            <ul class="collection">
+                                <li class="collection-item" (click)="setDatos(folder)" *ngFor="let folder of folders">{{folder.nombre}}</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -98,28 +98,33 @@
         <div class="row">
             <div class="col s6">
                 <div class="card-panel transparent" style="height: 500px;">
-                    <br><br><br>
                     <div class="row">
-                        <div class="input-field col s8 offset-s2">
-                            <input id="nameFolder" type="text" class="white-text">
-                            <label for="nameFolder">Nombre Folder</label>
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix white-text">folder</i>
+                            <input id="nameFolder" type="text" class="white-text" disabled value="{{nombreFolder}}">
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col s8 offset-s2">
-                            <input id="fecha" type="text" class="white-text">
-                            <label for="fecha">Fecha Creacion</label>
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix white-text">route</i>
+                            <input id="rutaFolder" type="text" class="white-text" disabled value="{{rutaFolder}}">
                         </div>
                     </div>
                     <div class="row">
-                        <div class="input-field col s8 offset-s2">
-                            <input id="Propietario" type="text" class="white-text">
-                            <label for="Propietario">Propietario</label>
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix white-text">date_range</i>
+                            <input id="fecha" type="text" class="white-text" disabled value="{{fechaFolder}}">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <i class="material-icons prefix white-text">engineering</i>
+                            <input id="Propietario" type="text" class="white-text" [(ngModel)]="Propietario">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col s6 offset-s4">
-                            <a class="waves-effect waves-light btn"><i
+                            <a (click)="asignarPropietario()" class="waves-effect waves-light btn"><i
                                     class="material-icons left">border_color</i>Asignar</a>
                         </div>
                     </div>

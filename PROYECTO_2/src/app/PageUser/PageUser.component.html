@@ -7,8 +7,8 @@
           <img src="https://i.pinimg.com/564x/2b/f2/02/2bf202779cee342fafa84d6fee68004c.jpg">
         </div>
         <a href="#user"><img class="circle" src="https://cdn-icons-png.flaticon.com/512/7286/7286699.png"></a>
-        <a href="#name"><span class="white-text name">Administrador</span></a>
-        <a href="#email"><span class="white-text email">adminArchivos2022@gmail.com</span></a>
+        <a href="#name"><span class="white-text name">{{user.user}}</span></a>
+        <a href="#email"><span class="white-text email">{{user.email}}</span></a>
       </div>
     </li>
     <li>
@@ -21,17 +21,8 @@
       <div class="divider"></div>
     </li>
     <li><a class="subheader">Directorios</a></li>
-    <li>
-      <a (click)="flagFilesView()"><i class="material-icons">folder</i>Folder 1</a>
-    </li>
-    <li>
-      <a (click)="flagFilesView()"><i class="material-icons">folder</i>Foler 2</a>
-    </li>
-    <li>
-      <a (click)="flagFilesView()"><i class="material-icons">folder</i>Foler 3</a>
-    </li>
-    <li>
-      <a (click)="flagCollaboratorView()"><i class="material-icons">folder</i>Foler 4</a>
+    <li *ngFor="let folder of foldersUser">
+      <a (click)="flagFilesView()"><i class="material-icons">folder</i>{{folder.nombre}}</a>
     </li>
   </ul>
   <a id="menuDesp" data-target="slide-out" class="sidenav-trigger transparent"><i id="menuIcon"
@@ -39,8 +30,168 @@
 
   <a (click)="Logout()" id="logOut" class="waves-effect waves-light btn transparent"><i id="LogOutIcon"
       class="material-icons white-text">exit_to_app</i></a>
+  <br><br>
+  <div class="container center-align" *ngIf="getFlagAccount()">
+    <img id="iconoUser" src="https://cdn-icons-png.flaticon.com/512/560/560216.png" class="responsive-img" alt="">
+  </div>
+  <br><br>
+  <div class="container" *ngIf="getFlagAccount()">
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <i class="material-icons prefix white-text">face</i>
+            <input type="text" id="icon_prefix2" class="materialize-textarea white-text" [(ngModel)]="user.nombre"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+          <div class="input-field col s6">
+            <i class="material-icons prefix white-text">mail</i>
+            <input id="email" type="email" class="validate white-text" [(ngModel)]="user.email" disabled
+              [ngModelOptions]="{standalone: true}">
+            <span class="helper-text white-text" data-error="wrong" data-success="right"></span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <i class="material-icons prefix white-text">account_box</i>
+            <input type="text" id="icon_prefix3" class="materialize-textarea white-text" [(ngModel)]="user.user"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+          <div class="input-field col s6">
+            <i class="material-icons prefix white-text">key</i>
+            <input type="password" id="icon_prefix4" class="materialize-textarea white-text" [(ngModel)]="user.password"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s6">
+            <i class="material-icons prefix white-text">phone_in_talk</i>
+            <input type="tel" id="icon_prefix5" class="materialize-textarea white-text" [(ngModel)]="user.telefono"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+          <div class="input-field col s6">
+            <i class="material-icons prefix white-text">calendar_today</i>
+            <input type="text" class="datepicker white-text" [(ngModel)]="user.fechaNacimiento"
+              [ngModelOptions]="{standalone: true}">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s4 offset-s5">
+            <a (click)="editUser()" class="waves-effect waves-light btn transparent white-text">
+              <i class="material-icons right">save</i>
+              Guardar
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
 
-      <app-AccountUser *ngIf="getFlagAccount()"></app-AccountUser>
-      <app-CollaboratorUser *ngIf="getFlagCollaborator()"></app-CollaboratorUser>
-      <app-FilesUser *ngIf="getFlagFiles()"></app-FilesUser>
+  <div id="tree" class="container" *ngIf="getFlagCollaborator()">
+    <div class="row">
+      <div class="col s6">
+        <div class="card-panel blue lighten-2" style="height: 500px;">
+          <div id="panel">
+            <ul class="collection">
+              <li class="collection-item" *ngFor="let folder of foldersUser" (click)="setDatos(folder)">
+                {{folder.nombre}}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="permiso" class="container" *ngIf="getFlagCollaborator()">
+    <div class="row">
+      <div class="col s6">
+        <div class="card-panel transparent" style="height: 500px;">
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix white-text">folder</i>
+              <input id="Propietario" type="text" class="white-text" disabled value="{{nombreFolder}}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix white-text">manage_accounts</i>
+              <input id="Propietario" type="text" class="white-text" disabled value="{{propietarioDatos}}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix white-text">groups</i>
+              <input id="colaborador" type="text" class="white-text" disabled value="{{colaboradoresDatos}}">
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <i class="material-icons prefix white-text">emoji_people</i>
+              <input id="newColaborador" type="text" class="white-text" [(ngModel)]="colaborador">
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s5 offset-s4">
+              <a (click)="actualizarColaboradores()" class="waves-effect waves-light btn blue darken-1"><i
+                  class="material-icons right">group_add</i>Agregar</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container center-align" *ngIf="getFlagFiles()">
+    <img src="https://cdn-icons-png.flaticon.com/512/220/220980.png" id="FileIcon" class="responsive-img" alt="">
+  </div>
+  
+  <div id="tree" class="container" *ngIf="getFlagFiles()">
+    <div class="row">
+      <div class="col s6">
+        <div class="card-panel blue lighten-2" style="height: 500px;">
+          <div id="panel2">
+            <ul>
+                <!-- Una Tabulacion es 4 &nbsp; cer codigo con peticiones entre otros-->
+                <li>Root node 1</li>
+                <li>&nbsp;&nbsp;&nbsp;&nbsp;child_node_1 </li>
+                <li>&nbsp;&nbsp;&nbsp;&nbsp;child_node_2 </li>
+                <li>Root node 2</li>
+            </ul>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="permiso" class="container" *ngIf="getFlagFiles()">
+    <div class="row">
+      <div class="col s6">
+        <div class="card-panel transparent" style="height: 500px;">
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="Propietario" type="text" class="white-text">
+              <label for="Propietario">Propietario</label>
+            </div>
+            <div class="input-field col s6">
+              <input id="fecha" type="text" class="white-text">
+              <label for="fecha">Fecha</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s6">
+              <input id="nombreArchivo" type="text" class="white-text">
+              <label for="nombreArchivo">Nombre</label>
+            </div>
+            <div class="input-field col s5 offset-s1">
+              <a class="waves-effect waves-light btn blue darken-1"><i
+                  class="material-icons right">save_alt</i>Guardar</a>
+            </div>
+          </div>
+          <div class="row">
+            <div class="input-field col s12">
+              <textarea id="ARCHIVO" class="transparent white-text" rows="11"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>

@@ -24,6 +24,11 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
   usuarios: Users[] = [];
   folders: Folders[] = [];
 
+  nombreFolder = "";
+  fechaFolder = "";
+  Propietario = "";
+  rutaFolder = "";
+
   constructor(private apiTest: APIService, private router: Router) { }
 
   ngOnInit() {
@@ -32,6 +37,7 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
       this.router.navigate(['Denied']);
     } else {
       UserList.getInstance().clearList();
+      FolderList.getInstance().clearList();
 
       this.apiTest.getUsers()
         .subscribe(resp => {
@@ -49,15 +55,10 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
       this.apiTest.getFolders()
         .subscribe(resp => {
           resp.forEach(function(folder) {
-            folder.ruta = folder.ruta.slice(1);
             FolderList.getInstance().addFolder(folder);
           })
 
           this.folders = FolderList.getInstance().getList();
-          console.log(this.folders);
-
-          // Meter Folders En La Vista
-          // Si Le Jugas Al V***s Se Meten Las Rutas En Collapsibles
         });
     }
   }
@@ -102,7 +103,7 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
       if (this.usuarios[i].email == usr.email) {
         this.usuarios[i].activador = true;
         UserList.getInstance().editUser(i, this.usuarios[i]);
-        this.apiTest.editarUser(this.usuarios[i], 'activar')
+        this.apiTest.editarUser(this.usuarios[i], '', 'activar')
           .subscribe(resp => {
             this.flagUsers();
           });
@@ -118,7 +119,7 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
       if (this.usuarios[i].email == usr.email) {
         this.usuarios[i].activador = false;
         UserList.getInstance().editUser(i, this.usuarios[i]);
-        this.apiTest.editarUser(this.usuarios[i], 'desactivar')
+        this.apiTest.editarUser(this.usuarios[i], '', 'desactivar')
           .subscribe(resp => {
             this.flagUsers();
           });
@@ -134,7 +135,7 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
       if (this.usuarios[i].email == usr.email) {
         this.usuarios[i].habilitado = !this.usuarios[i].habilitado;
         UserList.getInstance().editUser(i, this.usuarios[i]);
-        this.apiTest.editarUser(this.usuarios[i], 'habilitar')
+        this.apiTest.editarUser(this.usuarios[i], '', 'habilitar')
           .subscribe(resp => {
             this.flagUsers();
           });
@@ -144,8 +145,40 @@ export class PageAdminComponent implements OnInit, AfterViewInit {
     }
   }
 
+  asignarPropietario() {
+    for(var i = 0; i < this.folders.length; i++) {
+      if(this.folders[i].ruta == this.rutaFolder) {
+        this.folders[i].propietario = this.Propietario;
+        console.log(this.folders[i].propietario);
+        FolderList.getInstance().editFolder(i, this.folders[i]);
+        this.apiTest.editPropetary(this.folders[i])
+          .subscribe(resp => {
+            this.flagPermisos();
+          });
+
+        break;
+      }
+    }
+
+    this.nombreFolder = "";
+    this.fechaFolder = "";
+    this.Propietario = "";
+    this.rutaFolder = "";
+
+    M.toast({html: 'El Propietario Se Ha Asignado'});
+  }
+
   Logout() {
+    UserList.getInstance().clearList();
+    FolderList.getInstance().clearList();
     this.router.navigate(['']);
+  }
+
+  setDatos(folder:Folders) {
+    this.nombreFolder = folder.nombre;
+    this.fechaFolder = folder.fecha;
+    this.Propietario = folder.propietario;
+    this.rutaFolder = folder.ruta;
   }
 
 
