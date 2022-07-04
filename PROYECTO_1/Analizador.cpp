@@ -1377,7 +1377,7 @@ void analizarComando(string comando)
                     continue; 
                 }
 
-                linea.erase(find(linea.begin(), linea.end(), '\r'));
+                //linea.erase(find(linea.begin(), linea.end(), '\r'));
                 linea.erase(find(linea.begin(), linea.end(), '\n'));
                 cout << "\t" << linea << endl;
                 analizarComando(linea);
